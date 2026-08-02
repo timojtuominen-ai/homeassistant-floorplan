@@ -1,0 +1,8 @@
+# Changelog
+
+## 0.1.0
+
+- Initial local app.
+- TwinCAT 2 ADS connection with configurable local AMS Net ID.
+- Reads one LREAL symbol.
+- MQTT Discovery temperature sensor.

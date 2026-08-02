@@ -1,0 +1,3 @@
+# Beckhoff ADS Gateway
+
+Local Home Assistant app for reading TwinCAT 2 ADS symbols and publishing them through MQTT Discovery.
