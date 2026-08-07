@@ -2,4 +2,4 @@
 
 Repository containing the Beckhoff ADS Gateway for Home Assistant.
 
-Current release: **1.2.0**
+Current release: **1.3.1**
