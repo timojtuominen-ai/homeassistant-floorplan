@@ -1,0 +1,63 @@
+name: "Beckhoff ADS Gateway"
+version: "1.5.0"
+slug: "beckhoff_ads_gateway"
+description: "TwinCAT 2 / TcBA gateway for Home Assistant: temperatures, lighting and binary sensors via ADS + MQTT Discovery."
+url: "https://github.com/timojtuominen-ai/homeassistant-floorplan"
+startup: application
+boot: auto
+init: false
+stage: experimental
+arch:
+  - aarch64
+host_network: true
+services:
+  - mqtt:need
+
+options:
+  plc_ip: "192.168.1.5"
+  plc_ams_net_id: "5.14.33.10.1.1"
+  local_ams_net_id: "192.168.1.57.1.1"
+  plc_ads_port: 801
+  poll_interval: 30
+  light_poll_interval: 1
+  binary_poll_interval: 1
+  reconnect_delay: 30
+  publish_heartbeat: 600
+  add_local_route: true
+
+  sensors_json: >-
+    [{"id":"olohuone_lampotila","name":"Olohuone lämpötila","symbol":".arrHVACStates[4].lrActualValue","type":"LREAL","unit":"°C","device_class":"temperature","state_class":"measurement","precision":1},{"id":"keittio_lampotila","name":"Keittiö lämpötila","symbol":".arrHVACStates[7].lrActualValue","type":"LREAL","unit":"°C","device_class":"temperature","state_class":"measurement","precision":1},{"id":"lt_mh_lampotila","name":"L&T MH lämpötila","symbol":".arrHVACStates[5].lrActualValue","type":"LREAL","unit":"°C","device_class":"temperature","state_class":"measurement","precision":1},{"id":"allun_mh_lampotila","name":"Allun MH lämpötila","symbol":".arrHVACStates[3].lrActualValue","type":"LREAL","unit":"°C","device_class":"temperature","state_class":"measurement","precision":1},{"id":"emman_mh_lampotila","name":"Emman MH lämpötila","symbol":".arrHVACStates[2].lrActualValue","type":"LREAL","unit":"°C","device_class":"temperature","state_class":"measurement","precision":1}]
+
+  lights_json: >-
+    [{"id":"oh_kulku_spotit","name":"OH kulku spotit","room":"olohuone","command_on_symbol":".arrLightingCommands[20].bOn","command_off_symbol":".arrLightingCommands[20].bOff","state_symbol":".arrLightingStates[20].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_pihan_puolen_ruokapoyta","name":"OH pihan puolen ruokapöytä","room":"olohuone","command_on_symbol":".arrLightingCommands[21].bOn","command_off_symbol":".arrLightingCommands[21].bOff","state_symbol":".arrLightingStates[21].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_terassin_puolen_valot","name":"OH terassin puolen valot","room":"olohuone","command_on_symbol":".arrLightingCommands[22].bOn","command_off_symbol":".arrLightingCommands[22].bOff","state_symbol":".arrLightingStates[22].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_keskivalo","name":"OH keskivalo","room":"olohuone","command_on_symbol":".arrLightingCommands[23].bOn","command_off_symbol":".arrLightingCommands[23].bOff","state_symbol":".arrLightingStates[23].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_epasuora_pihanseina","name":"OH epäsuora pihanseinä","room":"olohuone","command_on_symbol":".arrLightingCommands[24].bOn","command_off_symbol":".arrLightingCommands[24].bOff","state_symbol":".arrLightingStates[24].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_epasuora_paatyseina","name":"OH epäsuora päätyseinä","room":"olohuone","command_on_symbol":".arrLightingCommands[25].bOn","command_off_symbol":".arrLightingCommands[25].bOff","state_symbol":".arrLightingStates[25].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_epasuora_terassinseina","name":"OH epäsuora terassinseinä","room":"olohuone","command_on_symbol":".arrLightingCommands[26].bOn","command_off_symbol":".arrLightingCommands[26].bOff","state_symbol":".arrLightingStates[26].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"oh_pihan_puolen_kohdevalot","name":"OH pihan puolen kohdevalot","room":"olohuone","command_on_symbol":".arrLightingCommands[56].bOn","command_off_symbol":".arrLightingCommands[56].bOff","state_symbol":".arrLightingStates[56].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"keittio_valitila_valo","name":"Keittiön välitila valo","room":"keittio","command_on_symbol":".arrLightingCommands[31].bOn","command_off_symbol":".arrLightingCommands[31].bOff","state_symbol":".arrLightingStates[31].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"keittio_valo","name":"Keittiön valo","room":"keittio","command_on_symbol":".arrLightingCommands[32].bOn","command_off_symbol":".arrLightingCommands[32].bOff","state_symbol":".arrLightingStates[32].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"ruokatila_valo","name":"Ruokatilan valo","room":"keittio","command_on_symbol":".arrLightingCommands[33].bOn","command_off_symbol":".arrLightingCommands[33].bOff","state_symbol":".arrLightingStates[33].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"keittio_ruokatila_kaytava","name":"Keittiö/ruokatila käytävä","room":"keittio","command_on_symbol":".arrLightingCommands[34].bOn","command_off_symbol":".arrLightingCommands[34].bOff","state_symbol":".arrLightingStates[34].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"keittio_kaappien_paalla_valo","name":"Keittiön kaappien päällä oleva valo","room":"keittio","command_on_symbol":".arrLightingCommands[46].bOn","command_off_symbol":".arrLightingCommands[46].bOff","state_symbol":".arrLightingStates[46].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"lt_vaatehuonevalot","name":"L&T vaatehuonevalot","room":"lt_mh","command_on_symbol":".arrLightingCommands[10].bOn","command_off_symbol":".arrLightingCommands[10].bOff","state_symbol":".arrLightingStates[10].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"lt_spotit","name":"L&T spotit","room":"lt_mh","command_on_symbol":".arrLightingCommands[12].bOn","command_off_symbol":".arrLightingCommands[12].bOff","state_symbol":".arrLightingStates[12].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"lt_epasuora_valo","name":"L&T epäsuora valo","room":"lt_mh","command_on_symbol":".arrLightingCommands[19].bOn","command_off_symbol":".arrLightingCommands[19].bOff","state_symbol":".arrLightingStates[19].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"allun_spotit","name":"Allun MH spotit","room":"allun_mh","command_on_symbol":".arrLightingCommands[15].bOn","command_off_symbol":".arrLightingCommands[15].bOff","state_symbol":".arrLightingStates[15].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"allun_kattovalo","name":"Allun MH kattovalo","room":"allun_mh","command_on_symbol":".arrLightingCommands[16].bOn","command_off_symbol":".arrLightingCommands[16].bOff","state_symbol":".arrLightingStates[16].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"emman_spotit","name":"Emman MH spotit","room":"emman_mh","command_on_symbol":".arrLightingCommands[13].bOn","command_off_symbol":".arrLightingCommands[13].bOff","state_symbol":".arrLightingStates[13].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"emman_kattovalo","name":"Emman MH kattovalo","room":"emman_mh","command_on_symbol":".arrLightingCommands[14].bOn","command_off_symbol":".arrLightingCommands[14].bOff","state_symbol":".arrLightingStates[14].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"wc_lt_kattovalo","name":"WC L&T kattovalo","room":"wc_lt","command_on_symbol":".arrLightingCommands[35].bOn","command_off_symbol":".arrLightingCommands[35].bOff","state_symbol":".arrLightingStates[35].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"wc_lt_allasvalo","name":"WC L&T allasvalo","room":"wc_lt","command_on_symbol":".arrLightingCommands[36].bOn","command_off_symbol":".arrLightingCommands[36].bOff","state_symbol":".arrLightingStates[36].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"wc_lasten_kattovalo","name":"WC lasten kattovalo","room":"wc_lasten","command_on_symbol":".arrLightingCommands[38].bOn","command_off_symbol":".arrLightingCommands[38].bOff","state_symbol":".arrLightingStates[38].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200},{"id":"wc_lasten_allasvalo","name":"WC lasten allasvalo","room":"wc_lasten","command_on_symbol":".arrLightingCommands[39].bOn","command_off_symbol":".arrLightingCommands[39].bOff","state_symbol":".arrLightingStates[39].lrAverageControlValue","state_type":"LREAL","state_threshold":0.01,"pulse_ms":200}]
+
+  binary_sensors_json: >-
+    [{"id":"liike_olohuone","name":"Liiketunnistin olohuone","symbol":"P_Alerts.bLiiketunnistin1","device_class":"motion","invert":true},{"id":"liike_keittio","name":"Liiketunnistin keittiö","symbol":"P_Alerts.bLiiketunnistin2","device_class":"motion","invert":true},{"id":"liike_tuulikaappi","name":"Liiketunnistin tuulikaappi","symbol":"P_Alerts.bLiiketunnistin3","device_class":"motion","invert":true},{"id":"liike_khh","name":"Liiketunnistin KHH","symbol":"P_Alerts.bLiiketunnistin4","device_class":"motion","invert":true},{"id":"liike_autotalli","name":"Liiketunnistin autotalli","symbol":"P_Alerts.bLiiketunnistin5","device_class":"motion","invert":true},{"id":"liike_talli","name":"Liiketunnistin talli","symbol":"P_Alerts.bLiiketunnistin6","device_class":"motion","invert":true},{"id":"vuotovahti_keittio","name":"Vuotovahti keittiö","symbol":"P_Alerts.LeakageDetection1","device_class":"moisture","invert":false},{"id":"vuotovahti_ylakerran_wc","name":"Vuotovahti yläkerran WC","symbol":"P_Alerts.LeakageDetection2","device_class":"moisture","invert":false},{"id":"vuotovahti_alakerran_wc","name":"Vuotovahti alakerran WC","symbol":"P_Alerts.LeakageDetection3","device_class":"moisture","invert":false},{"id":"vuotovahti_tekninentila","name":"Vuotovahti tekninentila","symbol":"P_Alerts.LeakageDetection4","device_class":"moisture","invert":false},{"id":"terassin_ovi","name":"Terassin ovi","symbol":"P_Alerts.bOviraja1","device_class":"door","invert":true}]
+
+  rooms_json: >-
+    [{"id":"olohuone","name":"Olohuone valot päällä","lights":["oh_kulku_spotit","oh_pihan_puolen_ruokapoyta","oh_terassin_puolen_valot","oh_keskivalo","oh_epasuora_pihanseina","oh_epasuora_paatyseina","oh_epasuora_terassinseina","oh_pihan_puolen_kohdevalot"]},{"id":"keittio","name":"Keittiö valot päällä","lights":["keittio_valitila_valo","keittio_valo","ruokatila_valo","keittio_ruokatila_kaytava","keittio_kaappien_paalla_valo"]},{"id":"lt_mh","name":"L&T MH valot päällä","lights":["lt_vaatehuonevalot","lt_spotit","lt_epasuora_valo"]},{"id":"allun_mh","name":"Allun MH valot päällä","lights":["allun_spotit","allun_kattovalo"]},{"id":"emman_mh","name":"Emman MH valot päällä","lights":["emman_spotit","emman_kattovalo"]},{"id":"wc_lt","name":"WC L&T valot päällä","lights":["wc_lt_kattovalo","wc_lt_allasvalo"]},{"id":"wc_lasten","name":"WC lasten valot päällä","lights":["wc_lasten_kattovalo","wc_lasten_allasvalo"]}]
+
+  scan_hvac_states: false
+  scan_start_index: 0
+  scan_end_index: 31
+  log_level: "INFO"
+
+schema:
+  plc_ip: str
+  plc_ams_net_id: str
+  local_ams_net_id: str
+  plc_ads_port: int(1,65535)
+  poll_interval: int(1,3600)
+  light_poll_interval: int(1,60)
+  binary_poll_interval: int(1,60)
+  reconnect_delay: int(5,3600)
+  publish_heartbeat: int(30,86400)
+  add_local_route: bool
+  sensors_json: str
+  lights_json: str
+  binary_sensors_json: str
+  rooms_json: str
+  scan_hvac_states: bool
+  scan_start_index: int(0,999)
+  scan_end_index: int(0,999)
+  log_level: list(DEBUG|INFO|WARNING|ERROR)
