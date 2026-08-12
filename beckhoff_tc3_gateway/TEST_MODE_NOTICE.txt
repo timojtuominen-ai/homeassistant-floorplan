@@ -1,0 +1,4 @@
+IMPORTANT
+=========
+Keep `test_mode: true` while CX9240 is being tested in parallel with the existing CX5010 gateway.
+Do not use production mode until the old gateway is intentionally stopped for migration.
