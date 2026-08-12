@@ -130,15 +130,34 @@ def on_message(client, userdata, msg):
     except Exception:
         log.exception("MQTT command failed")
 
+def prepare_linux_ads_route():
+    """Configure the in-process Linux AMS router before opening the PLC connection."""
+    log.info("ADS router: opening local ADS port")
+    pyads.open_port()
+    try:
+        log.info("ADS router: setting local AMS Net ID to %s", LOCAL_AMS)
+        pyads.set_local_address(LOCAL_AMS)
+        try:
+            log.info("ADS router: adding client route %s -> %s", PLC_AMS, PLC_IP)
+            pyads.add_route(PLC_AMS, PLC_IP)
+            log.info("ADS router: client route added")
+        except Exception as exc:
+            # A duplicate route can be harmless; Connection() also creates the Linux client route.
+            log.warning("ADS router: add_route returned %s; continuing with Connection()", exc)
+    finally:
+        try:
+            pyads.close_port()
+        except Exception:
+            pass
+
 def connect_ads():
     global plc
-    try:
-        pyads.open_port()
-        pyads.set_local_address(LOCAL_AMS)
-    except Exception as exc:
-        log.debug("ADS router init: %s", exc)
+    log.info("ADS connect: preparing Linux route")
+    prepare_linux_ads_route()
+    log.info("ADS connect: opening PLC connection to %s / %s port %s", PLC_IP, PLC_AMS, ADS_PORT)
     p=pyads.Connection(PLC_AMS, ADS_PORT, PLC_IP)
     p.open()
+    log.info("ADS connect: transport opened, reading GVL_HA.xOnline")
     online=p.read_by_name("GVL_HA.xOnline", pyads.PLCTYPE_BOOL)
     log.info("ADS connected to %s / %s port %s, GVL_HA.xOnline=%s", PLC_IP,PLC_AMS,ADS_PORT,online)
     plc=p
@@ -165,7 +184,7 @@ def poll_once():
 
 def main():
     global mqttc, plc
-    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.0")
+    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.1")
     log.info("Mode=%s, PLC=%s AMS=%s ADS=%s LocalAMS=%s", "TEST" if TEST else "PRODUCTION",PLC_IP,PLC_AMS,ADS_PORT,LOCAL_AMS)
     mqttc=mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=f"{DEVICE_ID}_gateway")
     if MQTT_USER: mqttc.username_pw_set(MQTT_USER,MQTT_PASSWORD)
