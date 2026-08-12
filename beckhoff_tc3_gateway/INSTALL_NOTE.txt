@@ -1,0 +1,1 @@
+After merging to main, refresh/reload the Home Assistant add-on repository and install `Beckhoff TC3 Gateway TEST`. Before starting, set the CX9240 IP and AMS Net ID in the add-on configuration and keep test_mode=true.
