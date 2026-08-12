@@ -36,52 +36,74 @@ plc = None
 mqttc = None
 command_map = {}
 symbol_cache = {}
+symbol_prefix = ""
+
 
 def obj_id(legacy):
     return ("tc3_test_" + legacy) if TEST else legacy
 
+
 def topic_base(domain, legacy):
     return f"{PREFIX}/{domain}/{obj_id(legacy)}"
 
+
 def discovery_topic(domain, legacy):
     return f"homeassistant/{domain}/{DEVICE_ID}/{obj_id(legacy)}/config"
+
 
 def device():
     return {"identifiers": [DEVICE_ID], "name": DEVICE_NAME,
             "manufacturer": "Beckhoff", "model": "CX9240 / TwinCAT 3",
             "sw_version": "Kotiautomaatio_TC3 v0.22"}
 
+
 def clear_symbol_cache():
     symbol_cache.clear()
 
+
+def full_symbol_name(name):
+    if symbol_prefix and not name.lower().startswith(symbol_prefix.lower()):
+        return symbol_prefix + name
+    return name
+
+
+def log_symbol(sym, prefix="ADS symbol"):
+    log.info("%s: name=%s type=%s size=%s index_group=%s index_offset=%s",
+             prefix,
+             getattr(sym, "name", None),
+             getattr(sym, "symbol_type", getattr(sym, "symtype", None)),
+             getattr(sym, "size", None),
+             getattr(sym, "index_group", None),
+             getattr(sym, "index_offset", None))
+
+
 def resolve_symbol(name):
-    sym = symbol_cache.get(name)
+    cache_key = name
+    sym = symbol_cache.get(cache_key)
     if sym is not None:
         return sym
-    sym = plc.get_symbol(name)
-    symbol_cache[name] = sym
-    log.info(
-        "ADS symbol resolved: %s type=%s size=%s index_group=%s index_offset=%s",
-        name,
-        getattr(sym, "symbol_type", None),
-        getattr(sym, "size", None),
-        getattr(sym, "index_group", None),
-        getattr(sym, "index_offset", None),
-    )
+    actual = full_symbol_name(name)
+    sym = plc.get_symbol(actual)
+    symbol_cache[cache_key] = sym
+    log_symbol(sym, "ADS symbol resolved")
     return sym
+
 
 def read_symbol(name):
     with ads_lock:
         return resolve_symbol(name).read()
 
+
 def write_symbol(name, value):
     with ads_lock:
         resolve_symbol(name).write(value)
+
 
 def pulse_symbol(symbol):
     write_symbol(symbol, True)
     time.sleep(PULSE)
     write_symbol(symbol, False)
+
 
 def publish_config(domain, legacy, name, state_topic, extra=None, command_topic=None):
     cfg = {
@@ -100,6 +122,7 @@ def publish_config(domain, legacy, name, state_topic, extra=None, command_topic=
     if extra:
         cfg.update(extra)
     mqttc.publish(discovery_topic(domain, legacy), json.dumps(cfg, ensure_ascii=False), retain=True)
+
 
 def setup_discovery():
     if not DISCOVERY:
@@ -140,11 +163,13 @@ def setup_discovery():
     log.info("MQTT discovery published: %d lights, %d sensors, %d binary sensors, %d switches",
              len(ENT["lights"]), len(ENT["sensors"]), len(ENT["binary_sensors"]), len(ENT["switches"]))
 
+
 def on_connect(client, userdata, flags, reason_code, properties):
     log.info("MQTT connected: %s", reason_code)
     setup_discovery()
-    for t in command_map:
-        client.subscribe(t)
+    for topic in command_map:
+        client.subscribe(topic)
+
 
 def on_message(client, userdata, msg):
     try:
@@ -164,6 +189,7 @@ def on_message(client, userdata, msg):
     except Exception:
         log.exception("MQTT command failed")
 
+
 def prepare_linux_ads_client():
     log.info("ADS client: opening local ADS port to set AMS Net ID")
     pyads.open_port()
@@ -174,14 +200,53 @@ def prepare_linux_ads_client():
         pyads.close_port()
     log.info("ADS client: local AMS Net ID configured")
 
+
 def probe_ads_tcp():
     log.info("ADS network probe: testing %s:48898", PLC_IP)
     with socket.create_connection((PLC_IP, 48898), timeout=3.0):
         pass
     log.info("ADS network probe: TCP 48898 reachable")
 
+
+def discover_symbol_prefix(p):
+    global symbol_prefix
+    log.info("ADS symbol discovery: uploading PLC symbol table")
+    symbols = p.get_all_symbols()
+    log.info("ADS symbol discovery: PLC returned %d symbols", len(symbols))
+
+    matches = []
+    exact_suffix_matches = []
+    for sym in symbols:
+        name = str(getattr(sym, "name", "") or "")
+        lname = name.lower()
+        if "xonline" in lname or "gvl_ha" in lname:
+            matches.append(sym)
+        if lname.endswith("gvl_ha.xonline"):
+            exact_suffix_matches.append(sym)
+
+    log.info("ADS symbol discovery: found %d xOnline/GVL_HA candidates", len(matches))
+    for sym in matches[:100]:
+        log_symbol(sym, "ADS candidate")
+    if len(matches) > 100:
+        log.info("ADS symbol discovery: %d additional candidates omitted", len(matches) - 100)
+
+    if len(exact_suffix_matches) == 1:
+        actual = str(exact_suffix_matches[0].name)
+        suffix = "GVL_HA.xOnline"
+        symbol_prefix = actual[:-len(suffix)] if actual.lower().endswith(suffix.lower()) else ""
+        log.info("ADS symbol discovery: unique xOnline match=%s", actual)
+        log.info("ADS symbol discovery: derived symbol prefix='%s'", symbol_prefix)
+        return exact_suffix_matches[0]
+
+    if len(exact_suffix_matches) > 1:
+        log.error("ADS symbol discovery: multiple symbols end with GVL_HA.xOnline; refusing to guess")
+    else:
+        log.error("ADS symbol discovery: no symbol ending with GVL_HA.xOnline was found")
+    raise RuntimeError("GVL_HA.xOnline ADS symbol name unresolved; inspect ADS candidate lines")
+
+
 def connect_ads():
-    global plc
+    global plc, symbol_prefix
     log.info("ADS connect: preparing Linux client")
     prepare_linux_ads_client()
     probe_ads_tcp()
@@ -191,13 +256,25 @@ def connect_ads():
     p.open()
     plc = p
     clear_symbol_cache()
-    log.info("ADS connect: transport opened, resolving GVL_HA.xOnline metadata")
-    online_sym = resolve_symbol("GVL_HA.xOnline")
+    symbol_prefix = ""
+    log.info("ADS connect: transport opened, trying GVL_HA.xOnline")
+    try:
+        online_sym = p.get_symbol("GVL_HA.xOnline")
+        symbol_cache["GVL_HA.xOnline"] = online_sym
+        log_symbol(online_sym, "ADS symbol resolved directly")
+    except Exception as exc:
+        log.warning("ADS connect: direct GVL_HA.xOnline lookup failed: %s", exc)
+        online_sym = discover_symbol_prefix(p)
+        symbol_cache["GVL_HA.xOnline"] = online_sym
+
     online = online_sym.read()
-    log.info("ADS connected to %s / %s port %s, GVL_HA.xOnline=%s", PLC_IP, PLC_AMS, ADS_PORT, online)
+    log.info("ADS connected to %s / %s port %s, resolved xOnline=%s prefix='%s'",
+             PLC_IP, PLC_AMS, ADS_PORT, online, symbol_prefix)
+
 
 def pub_state(domain, legacy, value):
     mqttc.publish(topic_base(domain, legacy) + "/state", value, retain=True)
+
 
 def poll_once():
     for e in ENT["lights"]:
@@ -217,9 +294,10 @@ def poll_once():
     pub_state("binary_sensor", "gateway_online", "ON")
     mqttc.publish(f"{PREFIX}/availability", "online", retain=True)
 
+
 def main():
     global mqttc, plc
-    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.3")
+    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.4")
     log.info("Mode=%s, PLC=%s AMS=%s ADS=%s LocalAMS=%s",
              "TEST" if TEST else "PRODUCTION", PLC_IP, PLC_AMS, ADS_PORT, LOCAL_AMS)
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=f"{DEVICE_ID}_gateway")
@@ -252,6 +330,7 @@ def main():
             plc = None
             clear_symbol_cache()
             time.sleep(RECONNECT)
+
 
 if __name__ == "__main__":
     main()
