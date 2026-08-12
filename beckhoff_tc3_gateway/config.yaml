@@ -1,5 +1,5 @@
 name: "Beckhoff TC3 Gateway TEST"
-version: "0.1.1"
+version: "0.1.2"
 slug: "beckhoff_tc3_gateway"
 description: "TwinCAT 3 / CX9240 ADS <-> MQTT Discovery gateway for Kotiautomaatio_TC3 v0.22"
 url: "https://github.com/timojtuominen-ai/homeassistant-floorplan"
@@ -14,8 +14,8 @@ services:
   - mqtt:need
 
 options:
-  plc_ip: "192.168.1.50"
-  plc_ams_net_id: "192.168.1.50.1.1"
+  plc_ip: "192.168.1.171"
+  plc_ams_net_id: "5.179.194.231.1.1"
   local_ams_net_id: "192.168.1.57.1.1"
   plc_ads_port: 851
   poll_interval: 1.0
