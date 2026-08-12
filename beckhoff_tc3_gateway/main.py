@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, logging, os, threading, time
+import json, logging, os, socket, threading, time
 from pathlib import Path
 
 import paho.mqtt.client as mqtt
@@ -130,31 +130,30 @@ def on_message(client, userdata, msg):
     except Exception:
         log.exception("MQTT command failed")
 
-def prepare_linux_ads_route():
-    """Configure the in-process Linux AMS router before opening the PLC connection."""
-    log.info("ADS router: opening local ADS port")
+def prepare_linux_ads_client():
+    """Set the Linux client's AMS Net ID. Connection.open() creates the client-side route."""
+    log.info("ADS client: opening local ADS port to set AMS Net ID")
     pyads.open_port()
     try:
-        log.info("ADS router: setting local AMS Net ID to %s", LOCAL_AMS)
+        log.info("ADS client: setting local AMS Net ID to %s", LOCAL_AMS)
         pyads.set_local_address(LOCAL_AMS)
-        try:
-            log.info("ADS router: adding client route %s -> %s", PLC_AMS, PLC_IP)
-            pyads.add_route(PLC_AMS, PLC_IP)
-            log.info("ADS router: client route added")
-        except Exception as exc:
-            # A duplicate route can be harmless; Connection() also creates the Linux client route.
-            log.warning("ADS router: add_route returned %s; continuing with Connection()", exc)
     finally:
-        try:
-            pyads.close_port()
-        except Exception:
-            pass
+        pyads.close_port()
+    log.info("ADS client: local AMS Net ID configured")
+
+def probe_ads_tcp():
+    """Give an immediate, clear network diagnostic before pyads opens the ADS route."""
+    log.info("ADS network probe: testing %s:48898", PLC_IP)
+    with socket.create_connection((PLC_IP, 48898), timeout=3.0):
+        pass
+    log.info("ADS network probe: TCP 48898 reachable")
 
 def connect_ads():
     global plc
-    log.info("ADS connect: preparing Linux route")
-    prepare_linux_ads_route()
-    log.info("ADS connect: opening PLC connection to %s / %s port %s", PLC_IP, PLC_AMS, ADS_PORT)
+    log.info("ADS connect: preparing Linux client")
+    prepare_linux_ads_client()
+    probe_ads_tcp()
+    log.info("ADS connect: opening PLC connection to %s / %s port %s (client route auto-created by pyads)", PLC_IP, PLC_AMS, ADS_PORT)
     p=pyads.Connection(PLC_AMS, ADS_PORT, PLC_IP)
     p.open()
     log.info("ADS connect: transport opened, reading GVL_HA.xOnline")
@@ -184,7 +183,7 @@ def poll_once():
 
 def main():
     global mqttc, plc
-    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.1")
+    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.2")
     log.info("Mode=%s, PLC=%s AMS=%s ADS=%s LocalAMS=%s", "TEST" if TEST else "PRODUCTION",PLC_IP,PLC_AMS,ADS_PORT,LOCAL_AMS)
     mqttc=mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=f"{DEVICE_ID}_gateway")
     if MQTT_USER: mqttc.username_pw_set(MQTT_USER,MQTT_PASSWORD)
