@@ -1,0 +1,24 @@
+Beckhoff TC3 Gateway TEST v0.1
+==============================
+
+Purpose: safe CX9240 table testing in parallel with the existing CX5010 gateway.
+
+TEST mode:
+- test_mode = true
+- MQTT object IDs use tc3_test_... prefix
+- existing CX5010 entities are not replaced
+
+Current table-test entity scope:
+- selected TC3 lights
+- selected temperatures
+- selected motion/door/fire sensors
+- kitchen hood 30 min
+- car heating
+- extra yard lights
+
+Target used during current table test:
+- IP 192.168.1.171
+- AMS Net ID 5.179.194.231.1.1
+- ADS Runtime 1 port 851
+
+Expand the entity map after ADS/MQTT round-trip is verified.

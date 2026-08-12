@@ -1,0 +1,108 @@
+{
+  "lights": [
+    {
+      "id": 23,
+      "slug": "OH_keskivalo",
+      "state_symbol": "GVL_HA.xLight_023_OH_keskivalo",
+      "on_symbol": "GVL_HA.xCmdLightOn_023_OH_keskivalo",
+      "off_symbol": "GVL_HA.xCmdLightOff_023_OH_keskivalo",
+      "legacy_object_id": "tekninentila_beckhoff_cx5000_oh_keskivalo",
+      "name": "OH keskivalo"
+    },
+    {
+      "id": 30,
+      "slug": "Keittio_kattovalo",
+      "state_symbol": "GVL_HA.xLight_030_Keittio_kattovalo",
+      "on_symbol": "GVL_HA.xCmdLightOn_030_Keittio_kattovalo",
+      "off_symbol": "GVL_HA.xCmdLightOff_030_Keittio_kattovalo",
+      "legacy_object_id": "keittio_valo",
+      "name": "Keittiö kattovalo"
+    }
+  ],
+  "sensors": [
+    {
+      "legacy_object_id": "beckhoff_cx5000_olohuone_lampotila",
+      "name": "Olohuone lämpötila",
+      "symbol": "GVL_HA.rTemperature_04_Olohuone_lampotila",
+      "unit": "°C",
+      "device_class": "temperature"
+    },
+    {
+      "legacy_object_id": "tekninentila_beckhoff_cx5000_keittio_lampotila",
+      "name": "Keittiö lämpötila",
+      "symbol": "GVL_HA.rTemperature_07_Ruokatila_lampotila",
+      "unit": "°C",
+      "device_class": "temperature"
+    },
+    {
+      "legacy_object_id": "tekninentila_beckhoff_cx5000_sauna_lampotila",
+      "name": "Sauna lämpötila",
+      "symbol": "GVL_HA.rTemperature_08_Sauna",
+      "unit": "°C",
+      "device_class": "temperature"
+    },
+    {
+      "legacy_object_id": "ulkolampotila",
+      "name": "Ulkolämpötila",
+      "symbol": "GVL_HA.rTemperature_13_ulkolampotila",
+      "unit": "°C",
+      "device_class": "temperature"
+    }
+  ],
+  "binary_sensors": [
+    {
+      "legacy_object_id": "liike_olohuone",
+      "name": "Liiketunnistin olohuone",
+      "symbol": "GVL_HA.xMotion_Olohuone",
+      "device_class": "motion",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "liike_keittio",
+      "name": "Liiketunnistin keittiö",
+      "symbol": "GVL_HA.xMotion_Keittio",
+      "device_class": "motion",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "terassin_ovi",
+      "name": "Terassin ovi",
+      "symbol": "GVL_HA.xDoor_Terassin_ovi",
+      "device_class": "door",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "palovaroitin_13",
+      "name": "Olohuone savuilmaisin",
+      "symbol": "GVL_HA.xFire_13_Olohuone_savuilmaisin",
+      "device_class": "smoke",
+      "invert": false
+    }
+  ],
+  "switches": [
+    {
+      "legacy_object_id": "liesituuletin_30min",
+      "name": "Liesituuletin 30 min",
+      "state_symbol": "GVL_HA.xKitchenHoodActive",
+      "on_symbol": "GVL_HA.xCmdKitchenHood30min",
+      "off_symbol": "GVL_HA.xCmdKitchenHoodOff",
+      "pulse": true
+    },
+    {
+      "legacy_object_id": "autonlammitys",
+      "name": "Autonlämmitys",
+      "state_symbol": "GVL_HA.xCarHeatingActive",
+      "on_symbol": "GVL_HA.xCmdCarHeatingOn",
+      "off_symbol": "GVL_HA.xCmdCarHeatingOff",
+      "pulse": true
+    },
+    {
+      "legacy_object_id": "pihan_lisavalot",
+      "name": "Pihan lisävalot",
+      "state_symbol": "GVL_Lighting.xPihanLisavalot",
+      "on_symbol": "GVL_Lighting.xPihanLisavalot",
+      "off_symbol": "GVL_Lighting.xPihanLisavalot",
+      "pulse": false
+    }
+  ]
+}
