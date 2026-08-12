@@ -1,0 +1,7 @@
+Beckhoff TC3 Gateway TEST v0.1.3
+
+- Reads TwinCAT symbols through pyads AdsSymbol metadata instead of forcing ctypes sizes.
+- Logs symbol name, TwinCAT type, size, index group and index offset when first resolved.
+- Caches resolved symbols for polling and command writes.
+- Uses AdsSymbol.read()/write() so the PLC-reported datatype and size are authoritative.
+- Keeps TCP 48898 diagnostics and test_mode isolation.
