@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, logging, os, socket, threading, time
+import json, logging, os, re, socket, threading, time
 from pathlib import Path
 
 import paho.mqtt.client as mqtt
@@ -78,13 +78,12 @@ def log_symbol(sym, prefix="ADS symbol"):
 
 
 def resolve_symbol(name):
-    cache_key = name
-    sym = symbol_cache.get(cache_key)
+    sym = symbol_cache.get(name)
     if sym is not None:
         return sym
     actual = full_symbol_name(name)
     sym = plc.get_symbol(actual)
-    symbol_cache[cache_key] = sym
+    symbol_cache[name] = sym
     log_symbol(sym, "ADS symbol resolved")
     return sym
 
@@ -124,8 +123,15 @@ def publish_config(domain, legacy, name, state_topic, extra=None, command_topic=
     mqttc.publish(discovery_topic(domain, legacy), json.dumps(cfg, ensure_ascii=False), retain=True)
 
 
+def subscribe_commands():
+    if not mqttc or not mqttc.is_connected():
+        return
+    for topic in command_map:
+        mqttc.subscribe(topic)
+
+
 def setup_discovery():
-    if not DISCOVERY:
+    if not DISCOVERY or mqttc is None:
         return
     for e in ENT["lights"]:
         legacy = e["legacy_object_id"]
@@ -160,6 +166,7 @@ def setup_discovery():
     publish_config("binary_sensor", "gateway_online", "TC3 Gateway online", base + "/state",
                    extra={"payload_on": "ON", "payload_off": "OFF", "device_class": "connectivity"})
     mqttc.publish(f"{PREFIX}/availability", "online", retain=True)
+    subscribe_commands()
     log.info("MQTT discovery published: %d lights, %d sensors, %d binary sensors, %d switches",
              len(ENT["lights"]), len(ENT["sensors"]), len(ENT["binary_sensors"]), len(ENT["switches"]))
 
@@ -167,8 +174,6 @@ def setup_discovery():
 def on_connect(client, userdata, flags, reason_code, properties):
     log.info("MQTT connected: %s", reason_code)
     setup_discovery()
-    for topic in command_map:
-        client.subscribe(topic)
 
 
 def on_message(client, userdata, msg):
@@ -245,6 +250,120 @@ def discover_symbol_prefix(p):
     raise RuntimeError("GVL_HA.xOnline ADS symbol name unresolved; inspect ADS candidate lines")
 
 
+def slugify(value):
+    value = value.strip().lower()
+    value = re.sub(r"[^a-z0-9_]+", "_", value)
+    value = re.sub(r"_+", "_", value).strip("_")
+    return value or "entity"
+
+
+def friendly_tail(value):
+    value = re.sub(r"^\d+_", "", value)
+    text = value.replace("_", " ").strip()
+    replacements = {
+        "Keittio": "Keittiö", "keittio": "keittiö",
+        "lampotila": "lämpötila", "Ulkolampotila": "Ulkolämpötila",
+        "ulkolampotila": "ulkolämpötila"
+    }
+    for src, dst in replacements.items():
+        text = text.replace(src, dst)
+    return text[:1].upper() + text[1:] if text else value
+
+
+def entity_exists(collection, key, value):
+    return any(e.get(key) == value for e in ENT[collection])
+
+
+def add_runtime_entity(collection, entry, unique_key):
+    if entity_exists(collection, unique_key, entry[unique_key]):
+        return False
+    ENT[collection].append(entry)
+    return True
+
+
+def discover_runtime_entities(p):
+    """Expand the test map from the actual TC3 symbol table without guessing nonexistent symbols."""
+    log.info("ADS entity discovery: scanning TC3 symbol table for HA interface")
+    symbols = p.get_all_symbols()
+    names = {str(getattr(sym, "name", "") or "") for sym in symbols}
+
+    def short_name(actual):
+        if symbol_prefix and actual.lower().startswith(symbol_prefix.lower()):
+            return actual[len(symbol_prefix):]
+        return actual
+
+    shorts = {short_name(name): name for name in names}
+    short_lower = {name.lower(): name for name in shorts}
+    added_lights = added_sensors = added_binary = 0
+
+    for short in sorted(shorts):
+        if short.startswith("GVL_HA.xLight_"):
+            suffix = short[len("GVL_HA.xLight_"):]
+            on = f"GVL_HA.xCmdLightOn_{suffix}"
+            off = f"GVL_HA.xCmdLightOff_{suffix}"
+            if on.lower() not in short_lower or off.lower() not in short_lower:
+                log.warning("ADS entity discovery: skipping light %s because command pair is missing", short)
+                continue
+            entry = {
+                "id": suffix.split("_", 1)[0],
+                "slug": suffix,
+                "state_symbol": short,
+                "on_symbol": short_lower[on.lower()],
+                "off_symbol": short_lower[off.lower()],
+                "legacy_object_id": f"auto_light_{slugify(suffix)}",
+                "name": friendly_tail(suffix),
+            }
+            if add_runtime_entity("lights", entry, "state_symbol"):
+                added_lights += 1
+
+        elif short.startswith("GVL_HA.rTemperature_"):
+            suffix = short[len("GVL_HA.rTemperature_"):]
+            entry = {
+                "legacy_object_id": f"auto_temperature_{slugify(suffix)}",
+                "name": friendly_tail(suffix),
+                "symbol": short,
+                "unit": "°C",
+                "device_class": "temperature",
+            }
+            if add_runtime_entity("sensors", entry, "symbol"):
+                added_sensors += 1
+
+        else:
+            binary_specs = (
+                ("GVL_HA.xMotion_", "motion"),
+                ("GVL_HA.xDoor_", "door"),
+                ("GVL_HA.xFire_", "smoke"),
+                ("GVL_HA.xLeakage_", "moisture"),
+                ("GVL_HA.xLeak_", "moisture"),
+                ("GVL_HA.xWater_", "moisture"),
+            )
+            for prefix, device_class in binary_specs:
+                if short.startswith(prefix):
+                    suffix = short[len(prefix):]
+                    cls = device_class
+                    if prefix == "GVL_HA.xFire_" and any(x in suffix.lower() for x in ("lampo", "heat")):
+                        cls = "heat"
+                    entry = {
+                        "legacy_object_id": f"auto_{slugify(prefix.split('.')[-1].rstrip('_'))}_{slugify(suffix)}",
+                        "name": friendly_tail(suffix),
+                        "symbol": short,
+                        "device_class": cls,
+                        "invert": False,
+                    }
+                    if add_runtime_entity("binary_sensors", entry, "symbol"):
+                        added_binary += 1
+                    break
+
+    log.info(
+        "ADS entity discovery: added %d lights, %d temperature sensors, %d binary sensors; totals now %d/%d/%d/%d",
+        added_lights, added_sensors, added_binary,
+        len(ENT["lights"]), len(ENT["sensors"]), len(ENT["binary_sensors"]), len(ENT["switches"])
+    )
+
+    if added_lights or added_sensors or added_binary:
+        setup_discovery()
+
+
 def connect_ads():
     global plc, symbol_prefix
     log.info("ADS connect: preparing Linux client")
@@ -270,6 +389,7 @@ def connect_ads():
     online = online_sym.read()
     log.info("ADS connected to %s / %s port %s, resolved xOnline=%s prefix='%s'",
              PLC_IP, PLC_AMS, ADS_PORT, online, symbol_prefix)
+    discover_runtime_entities(p)
 
 
 def pub_state(domain, legacy, value):
@@ -297,7 +417,7 @@ def poll_once():
 
 def main():
     global mqttc, plc
-    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.4")
+    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.5")
     log.info("Mode=%s, PLC=%s AMS=%s ADS=%s LocalAMS=%s",
              "TEST" if TEST else "PRODUCTION", PLC_IP, PLC_AMS, ADS_PORT, LOCAL_AMS)
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=f"{DEVICE_ID}_gateway")
