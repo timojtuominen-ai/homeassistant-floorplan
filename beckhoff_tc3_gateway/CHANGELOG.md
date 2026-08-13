@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6
+- Update the ADS/MQTT interface for `Kotiautomaatio_TC3 v0.26` yard-light logic.
+- Add a dedicated `Pihavalot pakko päälle` switch using `GVL_HA.xCmdPihavalotForceOn/Off` and `GVL_HA.xPihavalotForceOn`.
+- Change `Pihan lisävalot` to use explicit PLC-owned HA command/status symbols instead of writing `GVL_Lighting` directly.
+- Add diagnostic binary sensors for actual Pihavalot state, automatic request, darkness condition, 06:00-22:00 time window and PLC clock validity.
+- Keep the runtime light auto-discovery safe: Lamp 17 is now read-only in the generic `xLight_*` interface and is controlled through the dedicated force switch.
+
 ## 0.1.5
 - Expand the CX9240 test gateway from the small seed map using the actual TwinCAT 3 symbol table.
 - Auto-discover all `GVL_HA.xLight_*` states that have matching `xCmdLightOn_*` and `xCmdLightOff_*` command symbols.
