@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.1
+- Update gateway diagnostics for `Kotiautomaatio_TC3 v0.29.6`.
+- Add `PLC startup - hälytykset estetty 7 s` from `GVL_HA.xSafetyStartupInhibitActive`.
+- Add current fire detector request diagnostic `GVL_HA.xFireAlarmRequest` while keeping `PALOHÄLYTYS` as the latched effective fire mode.
+- Add `Palokellot - palotila aktiivinen` from `GVL_HA.xFireSirenActive`.
+- Add burglary flash-phase diagnostic `GVL_HA.xBurglaryFlashPhase` for commissioning.
+- Existing 15 individually named fire detector entities and fire/burglary/leak acknowledgement controls remain available.
+
+## 0.2.0
+- Update gateway for `Kotiautomaatio_TC3 v0.29.5` commissioning and safety view.
+- Add clear top-level `PALOHÄLYTYS`, `MURTOHÄLYTYS`, and `VESIVUOTOHÄLYTYS` entities.
+- Add all 15 fire/heat detectors as individually named Home Assistant entities so the active detector is immediately visible.
+- Add acknowledgement controls for fire, burglary, and water-leak alarms.
+- Add raw/acknowledged water-leak diagnostics while retaining house-mode and water-valve status entities.
+
 ## 0.1.9
 - Update the gateway for `Kotiautomaatio_TC3 v0.29.4` fire-alarm acknowledgement.
 - Add `Kuittaa palohälytys` control using `GVL_HA.xCmdFireAlarmAck` and effective fire-alarm state `GVL_HA.xAnyFireAlarm`.
