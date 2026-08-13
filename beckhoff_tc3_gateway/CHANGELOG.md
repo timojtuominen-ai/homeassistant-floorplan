@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.9
+- Update the gateway for `Kotiautomaatio_TC3 v0.29.4` fire-alarm acknowledgement.
+- Add `Kuittaa palohälytys` control using `GVL_HA.xCmdFireAlarmAck` and effective fire-alarm state `GVL_HA.xAnyFireAlarm`.
+- Add raw fire diagnostic `Paloilmaisin aktiivinen (raw)` from `GVL_HA.xAnyFireDetectorActive`.
+- Add acknowledgement diagnostic `Palohälytys kuitattu - ilmaisin edelleen aktiivinen` from `GVL_HA.xFireAckActive`.
+- Individual detector entities remain raw physical states, so acknowledgement never hides an active smoke/heat detector from Home Assistant.
+- The acknowledge control is exposed through the existing switch command mechanism; on the Service page it can be presented as a push-button card.
+
 ## 0.1.8
 - Update the gateway for `Kotiautomaatio_TC3 v0.29` house-mode and safety architecture.
 - Add mutually exclusive Home Assistant mode controls: `Talon tila - Kotona`, `Talon tila - Poissa`, and `Talon tila - Poissa pitkään`.
