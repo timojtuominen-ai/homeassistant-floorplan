@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7
+- Update the gateway for `Kotiautomaatio_TC3 v0.28`.
+- Add dedicated Home Assistant switch `Kulkuvalot pakko päälle`.
+- The switch uses `GVL_HA.xCmdKulkuvalotForceOn/Off` and reports `GVL_HA.xKulkuvalotForceOn`.
+- Turning the switch OFF releases the force override and returns Lamp 57 to brightness-based automatic operation; it does not force the lights off.
+- No floorplan entity/control is required for this override; it is intended for the Home Assistant Service page.
+
 ## 0.1.6
 - Update the ADS/MQTT interface for `Kotiautomaatio_TC3 v0.26` yard-light logic.
 - Add a dedicated `Pihavalot pakko päälle` switch using `GVL_HA.xCmdPihavalotForceOn/Off` and `GVL_HA.xPihavalotForceOn`.
