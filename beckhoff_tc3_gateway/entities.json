@@ -108,6 +108,24 @@
       "symbol": "GVL_HA.xPihavalotClockValid",
       "device_class": "connectivity",
       "invert": false
+    },
+    {
+      "legacy_object_id": "murtohalytys_valvonta",
+      "name": "Murtohälytys valvonta päällä",
+      "symbol": "GVL_HA.xBurglaryArmed",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "vesiventtiili_kiinni",
+      "name": "Vesiventtiili kiinni",
+      "symbol": "GVL_HA.xWaterValveClosed",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "vedensyotto_auki",
+      "name": "Vedensyöttö auki",
+      "symbol": "GVL_HA.xWaterSupplyOpen",
+      "invert": false
     }
   ],
   "switches": [
@@ -149,6 +167,30 @@
       "state_symbol": "GVL_HA.xPihanLisavalot",
       "on_symbol": "GVL_HA.xCmdPihanLisavalotOn",
       "off_symbol": "GVL_HA.xCmdPihanLisavalotOff",
+      "pulse": true
+    },
+    {
+      "legacy_object_id": "talon_tila_kotona",
+      "name": "Talon tila - Kotona",
+      "state_symbol": "GVL_HA.xHouseModeHome",
+      "on_symbol": "GVL_HA.xCmdHouseModeHome",
+      "off_symbol": "GVL_HA.xCmdHouseModeHome",
+      "pulse": true
+    },
+    {
+      "legacy_object_id": "talon_tila_poissa",
+      "name": "Talon tila - Poissa",
+      "state_symbol": "GVL_HA.xHouseModeAway",
+      "on_symbol": "GVL_HA.xCmdHouseModeAway",
+      "off_symbol": "GVL_HA.xCmdHouseModeAway",
+      "pulse": true
+    },
+    {
+      "legacy_object_id": "talon_tila_poissa_pitkaan",
+      "name": "Talon tila - Poissa pitkään",
+      "state_symbol": "GVL_HA.xHouseModeAwayLong",
+      "on_symbol": "GVL_HA.xCmdHouseModeAwayLong",
+      "off_symbol": "GVL_HA.xCmdHouseModeAwayLong",
       "pulse": true
     }
   ]
