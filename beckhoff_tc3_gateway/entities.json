@@ -77,6 +77,37 @@
       "symbol": "GVL_HA.xFire_13_Olohuone_savuilmaisin",
       "device_class": "smoke",
       "invert": false
+    },
+    {
+      "legacy_object_id": "pihavalot_tila",
+      "name": "Pihavalot tila",
+      "symbol": "GVL_HA.xPihavalotActual",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "pihavalot_autopyynto",
+      "name": "Pihavalot automatiikan pyyntö",
+      "symbol": "GVL_HA.xPihavalotAutoRequest",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "pihavalot_pimeaa",
+      "name": "Pihavalot pimeää riittävästi",
+      "symbol": "GVL_HA.xPihavalotDarkEnough",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "pihavalot_aikaikkuna",
+      "name": "Pihavalot aikaikkuna 06-22",
+      "symbol": "GVL_HA.xPihavalotTimeWindow",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "pihavalot_kello_ok",
+      "name": "Pihavalot PLC-kello OK",
+      "symbol": "GVL_HA.xPihavalotClockValid",
+      "device_class": "connectivity",
+      "invert": false
     }
   ],
   "switches": [
@@ -97,12 +128,20 @@
       "pulse": true
     },
     {
+      "legacy_object_id": "pihavalot_pakko_paalle",
+      "name": "Pihavalot pakko päälle",
+      "state_symbol": "GVL_HA.xPihavalotForceOn",
+      "on_symbol": "GVL_HA.xCmdPihavalotForceOn",
+      "off_symbol": "GVL_HA.xCmdPihavalotForceOff",
+      "pulse": true
+    },
+    {
       "legacy_object_id": "pihan_lisavalot",
       "name": "Pihan lisävalot",
-      "state_symbol": "GVL_Lighting.xPihanLisavalot",
-      "on_symbol": "GVL_Lighting.xPihanLisavalot",
-      "off_symbol": "GVL_Lighting.xPihanLisavalot",
-      "pulse": false
+      "state_symbol": "GVL_HA.xPihanLisavalot",
+      "on_symbol": "GVL_HA.xCmdPihanLisavalotOn",
+      "off_symbol": "GVL_HA.xCmdPihanLisavalotOff",
+      "pulse": true
     }
   ]
 }
