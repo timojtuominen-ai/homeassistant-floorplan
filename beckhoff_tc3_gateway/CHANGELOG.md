@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2
+- Fix the 15 fire detector Home Assistant entities to reuse the original runtime-discovery object IDs, so existing dashboard cards continue receiving live MQTT state updates instead of showing stale values.
+- Keep every fire detector mapped explicitly to its corresponding `GVL_HA.xFire_XX_*` PLC symbol.
+- Use one consistent rule for all detectors: the physical NC input is interpreted in the PLC (`FALSE = FIRE`, `TRUE = NORMAL`); the gateway receives the already-processed `xFire_XX` alarm state and therefore publishes it without inversion (`TRUE = alarm`, `FALSE = normal`).
+- Preserve correct Home Assistant device classes: heat detectors use `heat`, smoke detectors use `smoke`.
+- Rename the reused detector entities to clear numbered names such as `Palo 06 - KHH lämpöilmaisin`.
+
 ## 0.2.1
 - Update gateway diagnostics for `Kotiautomaatio_TC3 v0.29.6`.
 - Add `PLC startup - hälytykset estetty 7 s` from `GVL_HA.xSafetyStartupInhibitActive`.
@@ -55,5 +62,5 @@
 ## 0.1.2
 - Remove the redundant explicit `pyads.add_route()` call on Linux. `pyads.Connection(..., ip_address)` creates the client-side route when opened.
 - Keep the configured local AMS Net ID initialization before opening the PLC connection.
-- Add a short TCP 48898 reachability probe so network-level failures are visible immediately in the add-on log.
+- Add a short TCP 48898 reachability probe so network-level failures are visible immediately.
 - Set the bench-test defaults to the current CX9240 address `192.168.1.171` and AMS Net ID `5.179.194.231.1.1`.
