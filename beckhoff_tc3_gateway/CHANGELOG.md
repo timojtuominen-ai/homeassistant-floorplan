@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.8
+- Update the gateway for `Kotiautomaatio_TC3 v0.29` house-mode and safety architecture.
+- Add mutually exclusive Home Assistant mode controls: `Talon tila - Kotona`, `Talon tila - Poissa`, and `Talon tila - Poissa pitkään`.
+- Each mode control uses a PLC-owned momentary command and reports the corresponding house-mode status flag.
+- Add diagnostics for burglary monitoring armed state, water valve closed state, and water supply open state.
+- Keep the existing `Kulkuvalot pakko päälle`, `Pihavalot pakko päälle`, and `Pihan lisävalot` controls.
+
 ## 0.1.7
 - Update the gateway for `Kotiautomaatio_TC3 v0.28`.
 - Add dedicated Home Assistant switch `Kulkuvalot pakko päälle`.
