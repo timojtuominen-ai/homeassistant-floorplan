@@ -1,7 +1,7 @@
 name: "Beckhoff TC3 Gateway TEST"
-version: "0.1.9"
+version: "0.2.0"
 slug: "beckhoff_tc3_gateway"
-description: "TwinCAT 3 / CX9240 ADS <-> MQTT Discovery gateway for Kotiautomaatio_TC3 v0.29.4"
+description: "TwinCAT 3 / CX9240 ADS <-> MQTT Discovery gateway for Kotiautomaatio_TC3 v0.29.5"
 url: "https://github.com/timojtuominen-ai/homeassistant-floorplan"
 startup: application
 boot: auto
