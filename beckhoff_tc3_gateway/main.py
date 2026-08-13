@@ -38,6 +38,28 @@ command_map = {}
 symbol_cache = {}
 symbol_prefix = ""
 
+# MQTT Discovery IDs used by gateway v0.2.0/v0.2.1 for the same 15 fire detectors.
+# v0.2.2 restored the original auto_xfire_* IDs used by the existing HA dashboard.
+# Home Assistant keeps retained MQTT discovery configs, so without explicitly deleting
+# these old IDs both generations appear as duplicate fire detector entities.
+OBSOLETE_FIRE_DISCOVERY_IDS = [
+    "fire_01_talli",
+    "fire_02_liiteri",
+    "fire_03_autotalli",
+    "fire_04_tuulikaappi",
+    "fire_05_eteinen",
+    "fire_06_khh",
+    "fire_07_tyohuone",
+    "fire_08_kellari",
+    "fire_09_kellarin_varasto",
+    "fire_10_tekninen_tila",
+    "fire_11_makuuhuone_lt",
+    "fire_12_keittio",
+    "fire_13_olohuone",
+    "fire_14_emma",
+    "fire_15_allu",
+]
+
 
 def obj_id(legacy):
     return ("tc3_test_" + legacy) if TEST else legacy
@@ -54,7 +76,7 @@ def discovery_topic(domain, legacy):
 def device():
     return {"identifiers": [DEVICE_ID], "name": DEVICE_NAME,
             "manufacturer": "Beckhoff", "model": "CX9240 / TwinCAT 3",
-            "sw_version": "Kotiautomaatio_TC3 v0.22"}
+            "sw_version": "Kotiautomaatio_TC3 v0.29.6"}
 
 
 def clear_symbol_cache():
@@ -123,6 +145,15 @@ def publish_config(domain, legacy, name, state_topic, extra=None, command_topic=
     mqttc.publish(discovery_topic(domain, legacy), json.dumps(cfg, ensure_ascii=False), retain=True)
 
 
+def clear_obsolete_discovery():
+    """Delete retained MQTT discovery configs for superseded duplicate fire entities."""
+    for legacy in OBSOLETE_FIRE_DISCOVERY_IDS:
+        mqttc.publish(discovery_topic("binary_sensor", legacy), "", retain=True)
+        mqttc.publish(topic_base("binary_sensor", legacy) + "/state", "", retain=True)
+    log.info("MQTT discovery cleanup: removed %d obsolete duplicate fire detector IDs",
+             len(OBSOLETE_FIRE_DISCOVERY_IDS))
+
+
 def subscribe_commands():
     if not mqttc or not mqttc.is_connected():
         return
@@ -133,6 +164,11 @@ def subscribe_commands():
 def setup_discovery():
     if not DISCOVERY or mqttc is None:
         return
+
+    # Cleanup is intentionally repeated on every MQTT reconnect. Publishing an empty
+    # retained config is idempotent and guarantees old duplicate entities disappear.
+    clear_obsolete_discovery()
+
     for e in ENT["lights"]:
         legacy = e["legacy_object_id"]
         base = topic_base("light", legacy)
@@ -417,7 +453,7 @@ def poll_once():
 
 def main():
     global mqttc, plc
-    log.info("Starting Beckhoff TC3 Gateway TEST v0.1.5")
+    log.info("Starting Beckhoff TC3 Gateway TEST v0.2.3")
     log.info("Mode=%s, PLC=%s AMS=%s ADS=%s LocalAMS=%s",
              "TEST" if TEST else "PRODUCTION", PLC_IP, PLC_AMS, ADS_PORT, LOCAL_AMS)
     mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id=f"{DEVICE_ID}_gateway")
