@@ -1,219 +1,55 @@
 {
   "lights": [
-    {
-      "id": 23,
-      "slug": "OH_keskivalo",
-      "state_symbol": "GVL_HA.xLight_023_OH_keskivalo",
-      "on_symbol": "GVL_HA.xCmdLightOn_023_OH_keskivalo",
-      "off_symbol": "GVL_HA.xCmdLightOff_023_OH_keskivalo",
-      "legacy_object_id": "tekninentila_beckhoff_cx5000_oh_keskivalo",
-      "name": "OH keskivalo"
-    },
-    {
-      "id": 30,
-      "slug": "Keittio_kattovalo",
-      "state_symbol": "GVL_HA.xLight_030_Keittio_kattovalo",
-      "on_symbol": "GVL_HA.xCmdLightOn_030_Keittio_kattovalo",
-      "off_symbol": "GVL_HA.xCmdLightOff_030_Keittio_kattovalo",
-      "legacy_object_id": "keittio_valo",
-      "name": "Keittiö kattovalo"
-    }
+    {"id":23,"slug":"OH_keskivalo","state_symbol":"GVL_HA.xLight_023_OH_keskivalo","on_symbol":"GVL_HA.xCmdLightOn_023_OH_keskivalo","off_symbol":"GVL_HA.xCmdLightOff_023_OH_keskivalo","legacy_object_id":"tekninentila_beckhoff_cx5000_oh_keskivalo","name":"OH keskivalo"},
+    {"id":30,"slug":"Keittio_kattovalo","state_symbol":"GVL_HA.xLight_030_Keittio_kattovalo","on_symbol":"GVL_HA.xCmdLightOn_030_Keittio_kattovalo","off_symbol":"GVL_HA.xCmdLightOff_030_Keittio_kattovalo","legacy_object_id":"keittio_valo","name":"Keittiö kattovalo"}
   ],
   "sensors": [
-    {
-      "legacy_object_id": "beckhoff_cx5000_olohuone_lampotila",
-      "name": "Olohuone lämpötila",
-      "symbol": "GVL_HA.rTemperature_04_Olohuone_lampotila",
-      "unit": "°C",
-      "device_class": "temperature"
-    },
-    {
-      "legacy_object_id": "tekninentila_beckhoff_cx5000_keittio_lampotila",
-      "name": "Keittiö lämpötila",
-      "symbol": "GVL_HA.rTemperature_07_Ruokatila_lampotila",
-      "unit": "°C",
-      "device_class": "temperature"
-    },
-    {
-      "legacy_object_id": "tekninentila_beckhoff_cx5000_sauna_lampotila",
-      "name": "Sauna lämpötila",
-      "symbol": "GVL_HA.rTemperature_08_Sauna",
-      "unit": "°C",
-      "device_class": "temperature"
-    },
-    {
-      "legacy_object_id": "ulkolampotila",
-      "name": "Ulkolämpötila",
-      "symbol": "GVL_HA.rTemperature_13_ulkolampotila",
-      "unit": "°C",
-      "device_class": "temperature"
-    }
+    {"legacy_object_id":"beckhoff_cx5000_olohuone_lampotila","name":"Olohuone lämpötila","symbol":"GVL_HA.rTemperature_04_Olohuone_lampotila","unit":"°C","device_class":"temperature"},
+    {"legacy_object_id":"tekninentila_beckhoff_cx5000_keittio_lampotila","name":"Keittiö lämpötila","symbol":"GVL_HA.rTemperature_07_Ruokatila_lampotila","unit":"°C","device_class":"temperature"},
+    {"legacy_object_id":"tekninentila_beckhoff_cx5000_sauna_lampotila","name":"Sauna lämpötila","symbol":"GVL_HA.rTemperature_08_Sauna","unit":"°C","device_class":"temperature"},
+    {"legacy_object_id":"ulkolampotila","name":"Ulkolämpötila","symbol":"GVL_HA.rTemperature_13_ulkolampotila","unit":"°C","device_class":"temperature"}
   ],
   "binary_sensors": [
-    {
-      "legacy_object_id": "liike_olohuone",
-      "name": "Liiketunnistin olohuone",
-      "symbol": "GVL_HA.xMotion_Olohuone",
-      "device_class": "motion",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "liike_keittio",
-      "name": "Liiketunnistin keittiö",
-      "symbol": "GVL_HA.xMotion_Keittio",
-      "device_class": "motion",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "terassin_ovi",
-      "name": "Terassin ovi",
-      "symbol": "GVL_HA.xDoor_Terassin_ovi",
-      "device_class": "door",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "palovaroitin_13",
-      "name": "Olohuone savuilmaisin",
-      "symbol": "GVL_HA.xFire_13_Olohuone_savuilmaisin",
-      "device_class": "smoke",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "palohavainto_raw",
-      "name": "Paloilmaisin aktiivinen (raw)",
-      "symbol": "GVL_HA.xAnyFireDetectorActive",
-      "device_class": "smoke",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "palohalytys_kuitattu",
-      "name": "Palohälytys kuitattu - ilmaisin edelleen aktiivinen",
-      "symbol": "GVL_HA.xFireAckActive",
-      "device_class": "problem",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "pihavalot_tila",
-      "name": "Pihavalot tila",
-      "symbol": "GVL_HA.xPihavalotActual",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "pihavalot_autopyynto",
-      "name": "Pihavalot automatiikan pyyntö",
-      "symbol": "GVL_HA.xPihavalotAutoRequest",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "pihavalot_pimeaa",
-      "name": "Pihavalot pimeää riittävästi",
-      "symbol": "GVL_HA.xPihavalotDarkEnough",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "pihavalot_aikaikkuna",
-      "name": "Pihavalot aikaikkuna 06-22",
-      "symbol": "GVL_HA.xPihavalotTimeWindow",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "pihavalot_kello_ok",
-      "name": "Pihavalot PLC-kello OK",
-      "symbol": "GVL_HA.xPihavalotClockValid",
-      "device_class": "connectivity",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "murtohalytys_valvonta",
-      "name": "Murtohälytys valvonta päällä",
-      "symbol": "GVL_HA.xBurglaryArmed",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "vesiventtiili_kiinni",
-      "name": "Vesiventtiili kiinni",
-      "symbol": "GVL_HA.xWaterValveClosed",
-      "invert": false
-    },
-    {
-      "legacy_object_id": "vedensyotto_auki",
-      "name": "Vedensyöttö auki",
-      "symbol": "GVL_HA.xWaterSupplyOpen",
-      "invert": false
-    }
+    {"legacy_object_id":"palohalytys","name":"PALOHÄLYTYS","symbol":"GVL_HA.xAnyFireAlarm","device_class":"smoke","invert":false},
+    {"legacy_object_id":"murtohalytys","name":"MURTOHÄLYTYS","symbol":"GVL_HA.xBurglaryAlarmLatched","device_class":"safety","invert":false},
+    {"legacy_object_id":"vesivuotohalytys","name":"VESIVUOTOHÄLYTYS","symbol":"GVL_HA.xAnyLeakAlarm","device_class":"moisture","invert":false},
+    {"legacy_object_id":"vesivuoto_raw","name":"Vesivuotoilmaisin aktiivinen (raw)","symbol":"GVL_HA.xLeakDetectorActive","device_class":"moisture","invert":false},
+    {"legacy_object_id":"vesivuoto_kuitattu","name":"Vesivuoto kuitattu - ilmaisin edelleen aktiivinen","symbol":"GVL_HA.xLeakAckActive","device_class":"problem","invert":false},
+    {"legacy_object_id":"palohavainto_raw","name":"Paloilmaisin aktiivinen (raw)","symbol":"GVL_HA.xAnyFireDetectorActive","device_class":"smoke","invert":false},
+    {"legacy_object_id":"palohalytys_kuitattu","name":"Palohälytys kuitattu - ilmaisin edelleen aktiivinen","symbol":"GVL_HA.xFireAckActive","device_class":"problem","invert":false},
+    {"legacy_object_id":"fire_01_talli","name":"Palo 01 - Talli lämpöilmaisin","symbol":"GVL_HA.xFire_01_Tallin_lampoilmaisin","device_class":"heat","invert":false},
+    {"legacy_object_id":"fire_02_liiteri","name":"Palo 02 - Liiteri savuilmaisin","symbol":"GVL_HA.xFire_02_Liiterin_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_03_autotalli","name":"Palo 03 - Autotalli lämpöilmaisin","symbol":"GVL_HA.xFire_03_Autotallin_lampoilmaisin","device_class":"heat","invert":false},
+    {"legacy_object_id":"fire_04_tuulikaappi","name":"Palo 04 - Tuulikaappi savuilmaisin","symbol":"GVL_HA.xFire_04_Tuulikaapin_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_05_eteinen","name":"Palo 05 - Eteinen savuilmaisin","symbol":"GVL_HA.xFire_05_Eteisen_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_06_khh","name":"Palo 06 - KHH lämpöilmaisin","symbol":"GVL_HA.xFire_06_KHH_lampoilmaisin","device_class":"heat","invert":false},
+    {"legacy_object_id":"fire_07_tyohuone","name":"Palo 07 - Työhuone savuilmaisin","symbol":"GVL_HA.xFire_07_Tyohuone_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_08_kellari","name":"Palo 08 - Kellari savuilmaisin","symbol":"GVL_HA.xFire_08_Kellari_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_09_kellarin_varasto","name":"Palo 09 - Kellarin varasto savuilmaisin","symbol":"GVL_HA.xFire_09_Kellarin_varaston_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_10_tekninen_tila","name":"Palo 10 - Tekninen tila savuilmaisin","symbol":"GVL_HA.xFire_10_Teknisen_tilan_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_11_makuuhuone_lt","name":"Palo 11 - Makuuhuone L&T savuilmaisin","symbol":"GVL_HA.xFire_11_Makuuhuone_LjaT_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_12_keittio","name":"Palo 12 - Keittiö savuilmaisin","symbol":"GVL_HA.xFire_12_Keittion_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_13_olohuone","name":"Palo 13 - Olohuone savuilmaisin","symbol":"GVL_HA.xFire_13_Olohuone_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_14_emma","name":"Palo 14 - Emman huone savuilmaisin","symbol":"GVL_HA.xFire_14_Emman_huone_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"fire_15_allu","name":"Palo 15 - Allun huone savuilmaisin","symbol":"GVL_HA.xFire_15_Allun_huone_savuilmaisin","device_class":"smoke","invert":false},
+    {"legacy_object_id":"murtohalytys_valvonta","name":"Murtohälytys valvonta päällä","symbol":"GVL_HA.xBurglaryArmed","invert":false},
+    {"legacy_object_id":"vesiventtiili_kiinni","name":"Vesiventtiili kiinni","symbol":"GVL_HA.xWaterValveClosed","invert":false},
+    {"legacy_object_id":"vedensyotto_auki","name":"Vedensyöttö auki","symbol":"GVL_HA.xWaterSupplyOpen","invert":false},
+    {"legacy_object_id":"liike_olohuone","name":"Liiketunnistin olohuone","symbol":"GVL_HA.xMotion_Olohuone","device_class":"motion","invert":false},
+    {"legacy_object_id":"liike_keittio","name":"Liiketunnistin keittiö","symbol":"GVL_HA.xMotion_Keittio","device_class":"motion","invert":false},
+    {"legacy_object_id":"terassin_ovi","name":"Terassin ovi","symbol":"GVL_HA.xDoor_Terassin_ovi","device_class":"door","invert":false}
   ],
   "switches": [
-    {
-      "legacy_object_id": "liesituuletin_30min",
-      "name": "Liesituuletin 30 min",
-      "state_symbol": "GVL_HA.xKitchenHoodActive",
-      "on_symbol": "GVL_HA.xCmdKitchenHood30min",
-      "off_symbol": "GVL_HA.xCmdKitchenHoodOff",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "autonlammitys",
-      "name": "Autonlämmitys",
-      "state_symbol": "GVL_HA.xCarHeatingActive",
-      "on_symbol": "GVL_HA.xCmdCarHeatingOn",
-      "off_symbol": "GVL_HA.xCmdCarHeatingOff",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "pihavalot_pakko_paalle",
-      "name": "Pihavalot pakko päälle",
-      "state_symbol": "GVL_HA.xPihavalotForceOn",
-      "on_symbol": "GVL_HA.xCmdPihavalotForceOn",
-      "off_symbol": "GVL_HA.xCmdPihavalotForceOff",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "kulkuvalot_pakko_paalle",
-      "name": "Kulkuvalot pakko päälle",
-      "state_symbol": "GVL_HA.xKulkuvalotForceOn",
-      "on_symbol": "GVL_HA.xCmdKulkuvalotForceOn",
-      "off_symbol": "GVL_HA.xCmdKulkuvalotForceOff",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "pihan_lisavalot",
-      "name": "Pihan lisävalot",
-      "state_symbol": "GVL_HA.xPihanLisavalot",
-      "on_symbol": "GVL_HA.xCmdPihanLisavalotOn",
-      "off_symbol": "GVL_HA.xCmdPihanLisavalotOff",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "talon_tila_kotona",
-      "name": "Talon tila - Kotona",
-      "state_symbol": "GVL_HA.xHouseModeHome",
-      "on_symbol": "GVL_HA.xCmdHouseModeHome",
-      "off_symbol": "GVL_HA.xCmdHouseModeHome",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "talon_tila_poissa",
-      "name": "Talon tila - Poissa",
-      "state_symbol": "GVL_HA.xHouseModeAway",
-      "on_symbol": "GVL_HA.xCmdHouseModeAway",
-      "off_symbol": "GVL_HA.xCmdHouseModeAway",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "talon_tila_poissa_pitkaan",
-      "name": "Talon tila - Poissa pitkään",
-      "state_symbol": "GVL_HA.xHouseModeAwayLong",
-      "on_symbol": "GVL_HA.xCmdHouseModeAwayLong",
-      "off_symbol": "GVL_HA.xCmdHouseModeAwayLong",
-      "pulse": true
-    },
-    {
-      "legacy_object_id": "kuittaa_palohalytys",
-      "name": "Kuittaa palohälytys",
-      "state_symbol": "GVL_HA.xAnyFireAlarm",
-      "on_symbol": "GVL_HA.xCmdFireAlarmAck",
-      "off_symbol": "GVL_HA.xCmdFireAlarmAck",
-      "pulse": true
-    }
+    {"legacy_object_id":"kuittaa_palohalytys","name":"Kuittaa palohälytys","state_symbol":"GVL_HA.xAnyFireAlarm","on_symbol":"GVL_HA.xCmdFireAlarmAck","off_symbol":"GVL_HA.xCmdFireAlarmAck","pulse":true},
+    {"legacy_object_id":"kuittaa_murtohalytys","name":"Kuittaa murtohälytys","state_symbol":"GVL_HA.xBurglaryAlarmLatched","on_symbol":"GVL_HA.xCmdAlarmReset","off_symbol":"GVL_HA.xCmdAlarmReset","pulse":true},
+    {"legacy_object_id":"kuittaa_vesivuoto","name":"Kuittaa vesivuotohälytys","state_symbol":"GVL_HA.xAnyLeakAlarm","on_symbol":"GVL_HA.xCmdLeakAlarmAck","off_symbol":"GVL_HA.xCmdLeakAlarmAck","pulse":true},
+    {"legacy_object_id":"talon_tila_kotona","name":"Talon tila - Kotona","state_symbol":"GVL_HA.xHouseModeHome","on_symbol":"GVL_HA.xCmdHouseModeHome","off_symbol":"GVL_HA.xCmdHouseModeHome","pulse":true},
+    {"legacy_object_id":"talon_tila_poissa","name":"Talon tila - Poissa","state_symbol":"GVL_HA.xHouseModeAway","on_symbol":"GVL_HA.xCmdHouseModeAway","off_symbol":"GVL_HA.xCmdHouseModeAway","pulse":true},
+    {"legacy_object_id":"talon_tila_poissa_pitkaan","name":"Talon tila - Poissa pitkään","state_symbol":"GVL_HA.xHouseModeAwayLong","on_symbol":"GVL_HA.xCmdHouseModeAwayLong","off_symbol":"GVL_HA.xCmdHouseModeAwayLong","pulse":true},
+    {"legacy_object_id":"pihavalot_pakko_paalle","name":"Pihavalot pakko päälle","state_symbol":"GVL_HA.xPihavalotForceOn","on_symbol":"GVL_HA.xCmdPihavalotForceOn","off_symbol":"GVL_HA.xCmdPihavalotForceOff","pulse":true},
+    {"legacy_object_id":"kulkuvalot_pakko_paalle","name":"Kulkuvalot pakko päälle","state_symbol":"GVL_HA.xKulkuvalotForceOn","on_symbol":"GVL_HA.xCmdKulkuvalotForceOn","off_symbol":"GVL_HA.xCmdKulkuvalotForceOff","pulse":true},
+    {"legacy_object_id":"pihan_lisavalot","name":"Pihan lisävalot","state_symbol":"GVL_HA.xPihanLisavalot","on_symbol":"GVL_HA.xCmdPihanLisavalotOn","off_symbol":"GVL_HA.xCmdPihanLisavalotOff","pulse":true},
+    {"legacy_object_id":"liesituuletin_30min","name":"Liesituuletin 30 min","state_symbol":"GVL_HA.xKitchenHoodActive","on_symbol":"GVL_HA.xCmdKitchenHood30min","off_symbol":"GVL_HA.xCmdKitchenHoodOff","pulse":true},
+    {"legacy_object_id":"autonlammitys","name":"Autonlämmitys","state_symbol":"GVL_HA.xCarHeatingActive","on_symbol":"GVL_HA.xCmdCarHeatingOn","off_symbol":"GVL_HA.xCmdCarHeatingOff","pulse":true}
   ]
 }
