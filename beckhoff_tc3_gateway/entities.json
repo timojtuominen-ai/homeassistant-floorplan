@@ -79,6 +79,20 @@
       "invert": false
     },
     {
+      "legacy_object_id": "palohavainto_raw",
+      "name": "Paloilmaisin aktiivinen (raw)",
+      "symbol": "GVL_HA.xAnyFireDetectorActive",
+      "device_class": "smoke",
+      "invert": false
+    },
+    {
+      "legacy_object_id": "palohalytys_kuitattu",
+      "name": "Palohälytys kuitattu - ilmaisin edelleen aktiivinen",
+      "symbol": "GVL_HA.xFireAckActive",
+      "device_class": "problem",
+      "invert": false
+    },
+    {
       "legacy_object_id": "pihavalot_tila",
       "name": "Pihavalot tila",
       "symbol": "GVL_HA.xPihavalotActual",
@@ -191,6 +205,14 @@
       "state_symbol": "GVL_HA.xHouseModeAwayLong",
       "on_symbol": "GVL_HA.xCmdHouseModeAwayLong",
       "off_symbol": "GVL_HA.xCmdHouseModeAwayLong",
+      "pulse": true
+    },
+    {
+      "legacy_object_id": "kuittaa_palohalytys",
+      "name": "Kuittaa palohälytys",
+      "state_symbol": "GVL_HA.xAnyFireAlarm",
+      "on_symbol": "GVL_HA.xCmdFireAlarmAck",
+      "off_symbol": "GVL_HA.xCmdFireAlarmAck",
       "pulse": true
     }
   ]
