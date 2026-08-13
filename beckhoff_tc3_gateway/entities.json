@@ -11,7 +11,11 @@
   ],
   "binary_sensors": [
     {"legacy_object_id":"palohalytys","name":"PALOHÄLYTYS","symbol":"GVL_HA.xAnyFireAlarm","device_class":"smoke","invert":false},
+    {"legacy_object_id":"palohalytys_pyynto","name":"Palohälytys - ilmaisimen pyyntö","symbol":"GVL_HA.xFireAlarmRequest","device_class":"smoke","invert":false},
+    {"legacy_object_id":"palokellot","name":"Palokellot - palotila aktiivinen","symbol":"GVL_HA.xFireSirenActive","invert":false},
+    {"legacy_object_id":"startup_safety_inhibit","name":"PLC startup - hälytykset estetty 7 s","symbol":"GVL_HA.xSafetyStartupInhibitActive","device_class":"problem","invert":false},
     {"legacy_object_id":"murtohalytys","name":"MURTOHÄLYTYS","symbol":"GVL_HA.xBurglaryAlarmLatched","device_class":"safety","invert":false},
+    {"legacy_object_id":"murtohalytys_vilkutus","name":"Murtohälytys - vilkutusvaihe","symbol":"GVL_HA.xBurglaryFlashPhase","invert":false},
     {"legacy_object_id":"vesivuotohalytys","name":"VESIVUOTOHÄLYTYS","symbol":"GVL_HA.xAnyLeakAlarm","device_class":"moisture","invert":false},
     {"legacy_object_id":"vesivuoto_raw","name":"Vesivuotoilmaisin aktiivinen (raw)","symbol":"GVL_HA.xLeakDetectorActive","device_class":"moisture","invert":false},
     {"legacy_object_id":"vesivuoto_kuitattu","name":"Vesivuoto kuitattu - ilmaisin edelleen aktiivinen","symbol":"GVL_HA.xLeakAckActive","device_class":"problem","invert":false},
