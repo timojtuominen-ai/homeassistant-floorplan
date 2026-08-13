@@ -136,6 +136,14 @@
       "pulse": true
     },
     {
+      "legacy_object_id": "kulkuvalot_pakko_paalle",
+      "name": "Kulkuvalot pakko päälle",
+      "state_symbol": "GVL_HA.xKulkuvalotForceOn",
+      "on_symbol": "GVL_HA.xCmdKulkuvalotForceOn",
+      "off_symbol": "GVL_HA.xCmdKulkuvalotForceOff",
+      "pulse": true
+    },
+    {
       "legacy_object_id": "pihan_lisavalot",
       "name": "Pihan lisävalot",
       "state_symbol": "GVL_HA.xPihanLisavalot",
