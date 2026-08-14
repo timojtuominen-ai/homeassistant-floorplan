@@ -8,7 +8,7 @@ RUN mkdir -p /app
 # Production-specific gateway keeps the original Home Assistant MQTT Discovery
 # identities so the existing floorplan entities continue working unchanged.
 COPY main.py /app/main.py
-RUN curl -fsSL https://raw.githubusercontent.com/timojtuominen-ai/homeassistant-floorplan/77efde2e6cc0a088cb69c37d44bf7759b5f3ba8a/beckhoff_tc3_gateway/entities.json -o /app/entities.json
+RUN curl -fsSL https://raw.githubusercontent.com/timojtuominen-ai/homeassistant-floorplan/f28f0cf8990efbc5a231ebed8476b0713a946219/beckhoff_tc3_gateway/entities.json -o /app/entities.json
 
 # v1.0.3 adds commissioning statuses plus writable heating setpoints/temperature offsets.
 COPY patch_v103.py /tmp/patch_v103.py
