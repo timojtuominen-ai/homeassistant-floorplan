@@ -10,6 +10,10 @@ RUN mkdir -p /app
 COPY main.py /app/main.py
 RUN curl -fsSL https://raw.githubusercontent.com/timojtuominen-ai/homeassistant-floorplan/77efde2e6cc0a088cb69c37d44bf7759b5f3ba8a/beckhoff_tc3_gateway/entities.json -o /app/entities.json
 
+# v1.0.3 adds commissioning statuses plus writable heating setpoints/temperature offsets.
+COPY patch_v103.py /tmp/patch_v103.py
+RUN python3 /tmp/patch_v103.py && rm /tmp/patch_v103.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
