@@ -14,7 +14,7 @@ MQTT_HOST=os.getenv("MQTT_HOST","core-mosquitto"); MQTT_PORT=int(os.getenv("MQTT
 MQTT_USER=os.getenv("MQTT_USER",""); MQTT_PASSWORD=os.getenv("MQTT_PASSWORD","")
 logging.basicConfig(level=getattr(logging,OPT.get("log_level","INFO")),format="%(asctime)s %(levelname)s %(message)s")
 log=logging.getLogger("beckhoff_cx9240_gateway")
-plc=None; mqttc=None; ads_lock=threading.Lock(); symbol_cache={}; command_map={}
+plc=None; mqttc=None; ads_lock=threading.Lock(); symbol_cache={}; command_map={}; last_sensor_publish=0.0; SENSOR_INTERVAL=30.0
 LEGACY_DEVICE_ID="beckhoff_cx5000_ads"
 ROOMS={"olohuone":["oh_kulku_spotit","oh_pihan_puolen_ruokapoyta","oh_terassin_puolen_valot","oh_keskivalo","oh_epasuora_pihanseina","oh_epasuora_paatyseina","oh_epasuora_terassinseina","oh_pihan_puolen_kohdevalot"],"keittio":["keittio_valitila_valo","keittio_valo","ruokatila_valo","keittio_ruokatila_kaytava","keittio_kaappien_paalla_valo"],"lt_mh":["lt_vaatehuonevalot","lt_spotit","lt_epasuora_valo"],"allun_mh":["allun_spotit","allun_kattovalo"],"emman_mh":["emman_spotit","emman_kattovalo"],"wc_lt":["wc_lt_kattovalo","wc_lt_allasvalo"],"wc_lasten":["wc_lasten_kattovalo","wc_lasten_allasvalo"],"autotalli":["autotalli_valot"],"tuulikaappi":["tuulikaappi_valot"],"khh":["khh_kaytava_valot","khh_ikkuna_valot"],"kellari":["kellari_spotit","kellari_isot_valot"],"tyohuone":["tyohuone_valo"],"eteinen":["eteinen_valot"],"suihku":["suihkun_valo"],"wc_alakerta":["wc_alakerta_kattovalo"],"kylmakellari":["kylmakellari_valo"],"kellarin_varasto":["kellarin_varasto_valo"],"tekninen_tila":["tekninen_tila_valo"],"sauna":["saunan_valo"]}
 ROOM_NAMES={"olohuone":"Olohuone valot päällä","keittio":"Keittiö valot päällä","lt_mh":"L&T MH valot päällä","allun_mh":"Allun MH valot päällä","emman_mh":"Emman MH valot päällä","wc_lt":"WC L&T valot päällä","wc_lasten":"WC lasten valot päällä","autotalli":"Autotalli valot päällä","tuulikaappi":"Tuulikaappi valot päällä","khh":"KHH valot päällä","kellari":"Kellari valot päällä","tyohuone":"Työhuone valot päällä","eteinen":"Eteinen valot päällä","suihku":"Suihku valot päällä","wc_alakerta":"Alakerran WC valot päällä","kylmakellari":"Kylmäkellari valot päällä","kellarin_varasto":"Kellarin varasto valot päällä","tekninen_tila":"Tekninen tila valot päällä","sauna":"Sauna valot päällä"}
@@ -84,11 +84,15 @@ def connect_ads():
     prepare_ads(); p=pyads.Connection(PLC_AMS,ADS_PORT,PLC_IP); p.open(); plc=p; symbol_cache.clear(); online=read("GVL_HA.xOnline"); log.info("ADS connected to %s / %s port %s, xOnline=%s",PLC_IP,PLC_AMS,ADS_PORT,online)
 def pub(topic,val): mqttc.publish(topic,val,retain=True)
 def poll_once():
+    global last_sensor_publish
     light_states={}
+    publish_sensors=(time.monotonic()-last_sensor_publish)>=SENSOR_INTERVAL
     for e in ENT["lights"]:
         v=bool(read(e["state_symbol"])); light_states[e["legacy_object_id"]]=v; _,state,_,avail=legacy_topics("light",e["legacy_object_id"]); pub(state,"ON" if v else "OFF"); pub(avail,"online")
-    for e in ENT["sensors"]:
-        v=read(e["symbol"]); _,state,_,avail=legacy_topics("sensor",e["legacy_object_id"]); pub(state,f"{float(v):.1f}"); pub(avail,"online")
+    if publish_sensors:
+        for e in ENT["sensors"]:
+            v=read(e["symbol"]); _,state,_,avail=legacy_topics("sensor",e["legacy_object_id"]); pub(state,f"{float(v):.1f}"); pub(avail,"online")
+        last_sensor_publish=time.monotonic()
     for e in ENT["binary_sensors"]:
         v=bool(read(e["symbol"])); v=(not v) if e.get("invert") else v; _,state,_,avail=legacy_topics("binary_sensor",e["legacy_object_id"]); pub(state,"ON" if v else "OFF"); pub(avail,"online")
     for e in ENT["switches"]:
