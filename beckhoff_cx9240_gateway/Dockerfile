@@ -14,6 +14,10 @@ RUN curl -fsSL https://raw.githubusercontent.com/timojtuominen-ai/homeassistant-
 COPY patch_v103.py /tmp/patch_v103.py
 RUN python3 /tmp/patch_v103.py && rm /tmp/patch_v103.py
 
+# v1.0.6 adds Service diagnostics, floor-heating temperatures and fault inputs.
+COPY patch_v106.py /tmp/patch_v106.py
+RUN python3 /tmp/patch_v106.py && rm /tmp/patch_v106.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
