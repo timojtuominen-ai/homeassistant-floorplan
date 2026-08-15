@@ -1,6 +1,12 @@
 # Beckhoff CX9240 Gateway — Production
 
-Production Home Assistant add-on for Kotiautomaatio_TC3 v0.33.0 / Beckhoff CX9240.
+Production Home Assistant add-on for Kotiautomaatio_TC3 v0.33.2 / Beckhoff CX9240.
+
+Version 1.0.11 adds the real `switch.palokellot_off_20min` control. Switching
+it ON pulses `GVL_HA.xCmdFireBellTestStart`, switching it OFF pulses
+`GVL_HA.xCmdFireBellTestStop`, and its state is read back from
+`GVL_HA.xFireBellTestActive`. The PLC inhibits only the physical fire-bell
+output; fire detection, fire status and all other fire actions remain active.
 
 Version 1.0.10 adds individual Home Assistant moisture entities for the
 technical room, kitchen, children's WC and downstairs WC. The existing common

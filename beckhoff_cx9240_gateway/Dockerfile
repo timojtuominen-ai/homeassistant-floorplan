@@ -34,6 +34,10 @@ RUN python3 /tmp/patch_v109.py && rm /tmp/patch_v109.py
 COPY patch_v110.py /tmp/patch_v110.py
 RUN python3 /tmp/patch_v110.py && rm /tmp/patch_v110.py
 
+# v1.0.11 connects the HA fire-bell inhibit switch to the PLC 20 minute timer.
+COPY patch_v111.py /tmp/patch_v111.py
+RUN python3 /tmp/patch_v111.py && rm /tmp/patch_v111.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
