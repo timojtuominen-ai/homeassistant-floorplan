@@ -50,6 +50,10 @@ RUN python3 /tmp/patch_v113.py && rm /tmp/patch_v113.py
 COPY patch_v114.py /tmp/patch_v114.py
 RUN python3 /tmp/patch_v114.py && rm /tmp/patch_v114.py
 
+# v1.0.15 removes retained MQTT Discovery configs from the obsolete gateway device.
+COPY patch_v115.py /tmp/patch_v115.py
+RUN python3 /tmp/patch_v115.py && rm /tmp/patch_v115.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
