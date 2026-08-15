@@ -1,6 +1,13 @@
 # Beckhoff CX9240 Gateway — Production
 
-Production Home Assistant add-on for Kotiautomaatio_TC3 v0.29.6 / Beckhoff CX9240.
+Production Home Assistant add-on for Kotiautomaatio_TC3 v0.32.1 / Beckhoff CX9240.
+
+Version 1.0.6 adds:
+
+- floor-heating supply and return temperatures;
+- waste-pump, battery-charger and low floor-heating-pressure alarms;
+- PLC/ADS connection status, TwinCAT Runtime state and observed connection uptime;
+- Raspberry Pi uptime, CPU temperature, free disk space, memory usage and throttling status when the host exposes it.
 
 This add-on is based on the bench-tested TC3 gateway but is hard-locked to production mode. It intentionally reuses the existing `beckhoff_cx5000` MQTT namespace / legacy entity IDs where the gateway map provides them, so the existing Home Assistant floorplan can transition to the CX9240 with minimal entity-ID changes.
 
