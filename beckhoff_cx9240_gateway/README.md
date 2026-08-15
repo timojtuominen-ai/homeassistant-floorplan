@@ -2,6 +2,13 @@
 
 Production Home Assistant add-on for Kotiautomaatio_TC3 v0.34.1 / Beckhoff CX9240.
 
+Version 1.0.15 removes retained MQTT Discovery configurations left by the
+obsolete `beckhoff_cx5000` gateway device. These retained messages created a
+second `Beckhoff CX9240` device and duplicate entities such as
+`light.beckhoff_cx9240_keittio_valitila_valo`. The cleanup targets only the old
+Discovery namespace; the active `beckhoff_ads` entities and their established
+entity IDs remain unchanged.
+
 Version 1.0.14 adds four momentary lighting group buttons and two stateful
 cleaning-light switches:
 
