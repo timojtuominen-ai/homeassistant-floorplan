@@ -2,6 +2,10 @@
 
 Production Home Assistant add-on for Kotiautomaatio_TC3 v0.32.1 / Beckhoff CX9240.
 
+Version 1.0.7 reads the floor-heating circuit low-pressure alarm directly from
+`GVL_Alarm.xFloorHeatingPressureAlarm` and publishes it as
+`binary_sensor.lattialammitys_paine_matala`.
+
 Version 1.0.6 adds:
 
 - floor-heating supply and return temperatures;
