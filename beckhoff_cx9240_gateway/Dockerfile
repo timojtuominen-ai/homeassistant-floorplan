@@ -46,6 +46,10 @@ RUN python3 /tmp/patch_v112.py && rm /tmp/patch_v112.py
 COPY patch_v113.py /tmp/patch_v113.py
 RUN python3 /tmp/patch_v113.py && rm /tmp/patch_v113.py
 
+# v1.0.14 publishes group-off buttons and cleaning-light mode switches.
+COPY patch_v114.py /tmp/patch_v114.py
+RUN python3 /tmp/patch_v114.py && rm /tmp/patch_v114.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
