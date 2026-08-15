@@ -42,6 +42,10 @@ RUN python3 /tmp/patch_v111.py && rm /tmp/patch_v111.py
 COPY patch_v112.py /tmp/patch_v112.py
 RUN python3 /tmp/patch_v112.py && rm /tmp/patch_v112.py
 
+# v1.0.13 publishes the five outbuilding lights and garage temperature.
+COPY patch_v113.py /tmp/patch_v113.py
+RUN python3 /tmp/patch_v113.py && rm /tmp/patch_v113.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]

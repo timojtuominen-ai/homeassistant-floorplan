@@ -1,7 +1,7 @@
 name: "Beckhoff CX9240 Gateway"
-version: "1.0.12"
+version: "1.0.13"
 slug: "beckhoff_cx9240_gateway"
-description: "Production TwinCAT 3 / CX9240 ADS <-> MQTT gateway for Kotiautomaatio_TC3 v0.34.0 with sauna rate-of-rise heat detector, physical fire-bell inhibit, independent moisture detectors, yard-light state, hot-tub control, Service diagnostics and heating controls"
+description: "Production TwinCAT 3 / CX9240 ADS <-> MQTT gateway for Kotiautomaatio_TC3 v0.34.0 with outbuilding lights and garage temperature, sauna rate-of-rise heat detector, physical fire-bell inhibit, independent moisture detectors, yard-light state, hot-tub control, Service diagnostics and heating controls"
 url: "https://github.com/timojtuominen-ai/homeassistant-floorplan"
 startup: application
 boot: auto

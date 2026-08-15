@@ -2,6 +2,19 @@
 
 Production Home Assistant add-on for Kotiautomaatio_TC3 v0.34.0 / Beckhoff CX9240.
 
+Version 1.0.13 publishes the five outbuilding lights and garage temperature:
+
+- `light.tallin_reunavalot`
+- `light.tallin_keskivalot`
+- `light.tallin_wc_valo`
+- `light.liiteri_etuvalot`
+- `light.liiteri_takavalo`
+- `sensor.talli_lampotila`
+
+The light commands use the existing PLC-owned `GVL_HA.xCmdLightOn_001...005`
+and `GVL_HA.xCmdLightOff_001...005` interfaces. Their states are read from
+`GVL_HA.xLight_001...005`; the gateway never writes physical outputs directly.
+
 Version 1.0.12 publishes the sauna PT1000 10 °C/min rate-of-rise detector as
 `binary_sensor.palovaroitin_16`. The detector is calculated and latched by the
 PLC; the gateway only exposes its raw detector state to Home Assistant.
