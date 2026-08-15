@@ -38,6 +38,10 @@ RUN python3 /tmp/patch_v110.py && rm /tmp/patch_v110.py
 COPY patch_v111.py /tmp/patch_v111.py
 RUN python3 /tmp/patch_v111.py && rm /tmp/patch_v111.py
 
+# v1.0.12 publishes the sauna PT1000 rate-of-rise heat detector from PLC v0.34.0.
+COPY patch_v112.py /tmp/patch_v112.py
+RUN python3 /tmp/patch_v112.py && rm /tmp/patch_v112.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
