@@ -30,6 +30,10 @@ RUN python3 /tmp/patch_v108.py && rm /tmp/patch_v108.py
 COPY patch_v109.py /tmp/patch_v109.py
 RUN python3 /tmp/patch_v109.py && rm /tmp/patch_v109.py
 
+# v1.0.10 publishes four independent moisture-detector states from PLC v0.33.0.
+COPY patch_v110.py /tmp/patch_v110.py
+RUN python3 /tmp/patch_v110.py && rm /tmp/patch_v110.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
