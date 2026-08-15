@@ -1,6 +1,10 @@
 # Beckhoff CX9240 Gateway — Production
 
-Production Home Assistant add-on for Kotiautomaatio_TC3 v0.32.1 / Beckhoff CX9240.
+Production Home Assistant add-on for Kotiautomaatio_TC3 v0.33.0 / Beckhoff CX9240.
+
+Version 1.0.10 adds individual Home Assistant moisture entities for the
+technical room, kitchen, children's WC and downstairs WC. The existing common
+leak alarm remains available for acknowledgement and water-valve safety logic.
 
 Version 1.0.9 publishes the actual final state of the main yard lights from
 `GVL_HA.xPihavalotActual`. This lets the floorplan show whether the physical
