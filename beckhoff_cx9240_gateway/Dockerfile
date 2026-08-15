@@ -26,6 +26,10 @@ RUN python3 /tmp/patch_v107.py && rm /tmp/patch_v107.py
 COPY patch_v108.py /tmp/patch_v108.py
 RUN python3 /tmp/patch_v108.py && rm /tmp/patch_v108.py
 
+# v1.0.9 publishes the actual final state of the main yard lights.
+COPY patch_v109.py /tmp/patch_v109.py
+RUN python3 /tmp/patch_v109.py && rm /tmp/patch_v109.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]

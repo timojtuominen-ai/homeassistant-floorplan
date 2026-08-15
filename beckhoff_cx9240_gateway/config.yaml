@@ -1,7 +1,7 @@
 name: "Beckhoff CX9240 Gateway"
-version: "1.0.8"
+version: "1.0.9"
 slug: "beckhoff_cx9240_gateway"
-description: "Production TwinCAT 3 / CX9240 ADS <-> MQTT gateway for Kotiautomaatio_TC3 v0.32.1 with hot-tub control, Service diagnostics and heating controls"
+description: "Production TwinCAT 3 / CX9240 ADS <-> MQTT gateway for Kotiautomaatio_TC3 v0.32.1 with yard-light state, hot-tub control, Service diagnostics and heating controls"
 url: "https://github.com/timojtuominen-ai/homeassistant-floorplan"
 startup: application
 boot: auto
@@ -14,9 +14,11 @@ services:
   - mqtt:need
 
 options:
-  plc_ip: "192.168.1.171"
-  plc_ams_net_id: "5.179.194.231.1.1"
-  local_ams_net_id: "192.168.1.57.1.1"
+  # Documentation-only TEST-NET defaults. Existing add-on options are retained
+  # during an upgrade; new installations must enter their own PLC/AMS values.
+  plc_ip: "192.0.2.10"
+  plc_ams_net_id: "192.0.2.10.1.1"
+  local_ams_net_id: "192.0.2.20.1.1"
   plc_ads_port: 851
   poll_interval: 1.0
   reconnect_delay: 5
