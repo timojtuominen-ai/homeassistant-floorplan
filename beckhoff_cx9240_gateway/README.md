@@ -1,6 +1,10 @@
 # Beckhoff CX9240 Gateway — Production
 
-Production Home Assistant add-on for Kotiautomaatio_TC3 v0.33.2 / Beckhoff CX9240.
+Production Home Assistant add-on for Kotiautomaatio_TC3 v0.34.0 / Beckhoff CX9240.
+
+Version 1.0.12 publishes the sauna PT1000 10 °C/min rate-of-rise detector as
+`binary_sensor.palovaroitin_16`. The detector is calculated and latched by the
+PLC; the gateway only exposes its raw detector state to Home Assistant.
 
 Version 1.0.11 adds the real `switch.palokellot_off_20min` control. Switching
 it ON pulses `GVL_HA.xCmdFireBellTestStart`, switching it OFF pulses
