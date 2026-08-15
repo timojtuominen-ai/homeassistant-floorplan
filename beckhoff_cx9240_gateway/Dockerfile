@@ -18,6 +18,10 @@ RUN python3 /tmp/patch_v103.py && rm /tmp/patch_v103.py
 COPY patch_v106.py /tmp/patch_v106.py
 RUN python3 /tmp/patch_v106.py && rm /tmp/patch_v106.py
 
+# v1.0.7 reads the floor-heating pressure alarm directly from GVL_Alarm.
+COPY patch_v107.py /tmp/patch_v107.py
+RUN python3 /tmp/patch_v107.py && rm /tmp/patch_v107.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
