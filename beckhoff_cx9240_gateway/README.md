@@ -1,6 +1,21 @@
 # Beckhoff CX9240 Gateway — Production
 
-Production Home Assistant add-on for Kotiautomaatio_TC3 v0.34.0 / Beckhoff CX9240.
+Production Home Assistant add-on for Kotiautomaatio_TC3 v0.34.1 / Beckhoff CX9240.
+
+Version 1.0.14 adds four momentary lighting group buttons and two stateful
+cleaning-light switches:
+
+- `button.kaikki_valot_pois`
+- `button.alakerran_valot_pois`
+- `button.ylakerran_valot_pois`
+- `button.tallin_liiterin_valot_pois`
+- `switch.siivousvalot_alakerta`
+- `switch.siivousvalot_ylakerta`
+
+All group-off commands are handled by the PLC. They leave the main yard lights,
+walkway lights and extra yard lights untouched. Fire-alarm lighting has priority.
+PLC v0.34.1 also filters the sauna software heat detector to reject short steam
+spikes while retaining rate-of-rise and fixed high-temperature protection.
 
 Version 1.0.13 publishes the five outbuilding lights and garage temperature:
 
