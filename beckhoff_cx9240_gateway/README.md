@@ -2,6 +2,10 @@
 
 Production Home Assistant add-on for Kotiautomaatio_TC3 v0.32.1 / Beckhoff CX9240.
 
+Version 1.0.8 adds Home Assistant entities for the hot-tub return and outlet
+temperatures and an ON/OFF switch for the hot-tub circulation pump. The PLC
+continues to own the physical output and exposes its actual logical state.
+
 Version 1.0.7 reads the floor-heating circuit low-pressure alarm directly from
 `GVL_Alarm.xFloorHeatingPressureAlarm` and publishes it as
 `binary_sensor.lattialammitys_paine_matala`.
