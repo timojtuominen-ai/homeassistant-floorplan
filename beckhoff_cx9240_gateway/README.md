@@ -2,6 +2,11 @@
 
 Production Home Assistant add-on for Kotiautomaatio_TC3 v0.32.1 / Beckhoff CX9240.
 
+Version 1.0.9 publishes the actual final state of the main yard lights from
+`GVL_HA.xPihavalotActual`. This lets the floorplan show whether the physical
+lighting logic is ON while the existing force switch still controls only the
+force-ON override.
+
 Version 1.0.8 adds Home Assistant entities for the hot-tub return and outlet
 temperatures and an ON/OFF switch for the hot-tub circulation pump. The PLC
 continues to own the physical output and exposes its actual logical state.
@@ -30,6 +35,8 @@ Recommended cutover:
 4. Check floorplan states: fire detectors, doors, motion, temperatures and lights.
 5. If CX9240 commissioning must be aborted, stop this add-on before restarting the old CX5010 gateway.
 
-Default target: CX9240 `192.168.1.171`, AMS Net ID `5.179.194.231.1.1`, ADS port `851`.
+Configure the PLC IP address and both AMS Net IDs in the add-on settings before
+starting a new installation. The repository defaults use the non-routable
+TEST-NET address range and are documentation placeholders only.
 
 The Home Assistant diagnostic `Palohälytys kuitattu - ilmaisin edelleen aktiivinen` is intentionally omitted from production discovery. PLC acknowledgement logic remains unchanged.
