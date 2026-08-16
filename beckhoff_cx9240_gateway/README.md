@@ -1,5 +1,15 @@
 # Beckhoff CX9240 Gateway — Production
 
+Version 1.0.17 publishes the actual PLC room-heating demand states used by the upstairs floorplan:
+
+- `binary_sensor.lammityspyynto_emman_huone`
+- `binary_sensor.lammityspyynto_allun_huone`
+- `binary_sensor.lammityspyynto_olohuone`
+- `binary_sensor.lammityspyynto_lt_mh`
+- `binary_sensor.lammityspyynto_keittio`
+
+The entities read the PLC-owned `GVL_HA.xHeatDemand_*` BOOL interfaces. The gateway only publishes their state; it does not calculate or command room heating.
+
 Production Home Assistant add-on for Kotiautomaatio_TC3 v0.34.1 / Beckhoff CX9240.
 
 Version 1.0.15 removes retained MQTT Discovery configurations left by the
