@@ -58,6 +58,10 @@ RUN python3 /tmp/patch_v115.py && rm /tmp/patch_v115.py
 COPY patch_v116.py /tmp/patch_v116.py
 RUN python3 /tmp/patch_v116.py && rm /tmp/patch_v116.py
 
+# v1.0.17 publishes actual PLC room-heating demand states.
+COPY patch_v117.py /tmp/patch_v117.py
+RUN python3 /tmp/patch_v117.py && rm /tmp/patch_v117.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
