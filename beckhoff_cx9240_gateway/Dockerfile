@@ -66,6 +66,10 @@ RUN python3 /tmp/patch_v117.py && rm /tmp/patch_v117.py
 COPY patch_v118.py /tmp/patch_v118.py
 RUN python3 /tmp/patch_v118.py && rm /tmp/patch_v118.py
 
+# v1.0.19 makes the kellari state follow the actual physical thermostat output.
+COPY patch_v119.py /tmp/patch_v119.py
+RUN python3 /tmp/patch_v119.py && rm /tmp/patch_v119.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
