@@ -1,5 +1,14 @@
 # Beckhoff CX9240 Gateway — Production
 
+Version 1.0.18 publishes the actual downstairs PLC room-heating demand states used by the floorplan:
+
+- `binary_sensor.lammityspyynto_tyohuone`
+- `binary_sensor.lammityspyynto_sauna`
+- `binary_sensor.lammityspyynto_kylmakellari`
+- `binary_sensor.lammityspyynto_kellari`
+
+These entities read the PLC-owned `GVL_HA.xHeatDemand_06/08/09/10_*` BOOL interfaces. The gateway only publishes their state.
+
 Version 1.0.17 publishes the actual PLC room-heating demand states used by the upstairs floorplan:
 
 - `binary_sensor.lammityspyynto_emman_huone`
