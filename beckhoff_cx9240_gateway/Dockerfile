@@ -62,6 +62,10 @@ RUN python3 /tmp/patch_v116.py && rm /tmp/patch_v116.py
 COPY patch_v117.py /tmp/patch_v117.py
 RUN python3 /tmp/patch_v117.py && rm /tmp/patch_v117.py
 
+# v1.0.18 publishes actual downstairs room-heating demand states.
+COPY patch_v118.py /tmp/patch_v118.py
+RUN python3 /tmp/patch_v118.py && rm /tmp/patch_v118.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
