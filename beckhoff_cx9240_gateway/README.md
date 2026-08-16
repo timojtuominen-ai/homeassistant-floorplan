@@ -1,5 +1,10 @@
 # Beckhoff CX9240 Gateway — Production
 
+Version 1.0.19 changes `binary_sensor.lammityspyynto_kellari` to read the
+actual physical thermostat output `GVL_IO.xDO_Toimilaite_Kellari`. The
+downstairs floorplan therefore turns the kellari temperature red whenever the
+PLC output is physically commanded ON, including output-test overrides.
+
 Version 1.0.18 publishes the actual downstairs PLC room-heating demand states used by the floorplan:
 
 - `binary_sensor.lammityspyynto_tyohuone`
