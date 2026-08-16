@@ -54,6 +54,10 @@ RUN python3 /tmp/patch_v114.py && rm /tmp/patch_v114.py
 COPY patch_v115.py /tmp/patch_v115.py
 RUN python3 /tmp/patch_v115.py && rm /tmp/patch_v115.py
 
+# v1.0.16 publishes PLC v0.35.0 persistent light, pushbutton and door counters.
+COPY patch_v116.py /tmp/patch_v116.py
+RUN python3 /tmp/patch_v116.py && rm /tmp/patch_v116.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
