@@ -1,5 +1,18 @@
 # Beckhoff CX9240 Gateway — Production
 
+Version 1.0.20 targets PLC v0.36 and adds:
+
+- hot-tub freeze-protection active and pump-request states;
+- cold-water warning and freeze-risk alarm states;
+- the shared 60-second Autotalli/Talli entry-delay status;
+- the Christmas-light socket's actual state;
+- `switch.jouluvalot_pakko_paalle`, whose OFF command releases the force and
+  returns the socket to darkness-controlled automatic operation.
+
+The hot-tub circulation-pump switch continues to show the PLC's final logical
+state, including a freeze-protection request. The gateway never bypasses PLC
+output arbitration.
+
 Version 1.0.19 changes `binary_sensor.lammityspyynto_kellari` to read the
 actual physical thermostat output `GVL_IO.xDO_Toimilaite_Kellari`. The
 downstairs floorplan therefore turns the kellari temperature red whenever the

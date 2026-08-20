@@ -70,6 +70,10 @@ RUN python3 /tmp/patch_v118.py && rm /tmp/patch_v118.py
 COPY patch_v119.py /tmp/patch_v119.py
 RUN python3 /tmp/patch_v119.py && rm /tmp/patch_v119.py
 
+# v1.0.20 publishes PLC v0.36 freeze-protection, garage-delay and Christmas-light controls.
+COPY patch_v120.py /tmp/patch_v120.py
+RUN python3 /tmp/patch_v120.py && rm /tmp/patch_v120.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
