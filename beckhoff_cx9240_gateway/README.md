@@ -1,5 +1,15 @@
 # Beckhoff CX9240 Gateway — Production
 
+Version 1.0.21 targets PLC v0.36.2 and:
+
+- removes the retired floor-heating supply/return temperature and offset reads,
+  preventing ADS error 1808 from disconnecting the gateway;
+- publishes the electrical-cabinet PT1000 temperature, calibration offset and
+  Fire 17 heat-detector state;
+- publishes `switch.kuorivalvonta` plus arming-ready, arming-blocked and
+  main-door entry-delay states;
+- removes the four obsolete retained MQTT Discovery configurations.
+
 Version 1.0.20 targets PLC v0.36 and adds:
 
 - hot-tub freeze-protection active and pump-request states;
