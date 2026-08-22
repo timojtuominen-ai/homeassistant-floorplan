@@ -74,6 +74,10 @@ RUN python3 /tmp/patch_v119.py && rm /tmp/patch_v119.py
 COPY patch_v120.py /tmp/patch_v120.py
 RUN python3 /tmp/patch_v120.py && rm /tmp/patch_v120.py
 
+# v1.0.21 targets PLC v0.36.2: cabinet Fire 17, shell protection and removed floor PT1000 symbols.
+COPY patch_v121.py /tmp/patch_v121.py
+RUN python3 /tmp/patch_v121.py && rm /tmp/patch_v121.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
