@@ -1,5 +1,9 @@
 # Beckhoff CX9240 Gateway — Production
 
+Version 1.0.22 adds `binary_sensor.pimeaa_riittavasti` from the existing PLC
+symbol `GVL_HA.xPihavalotDarkEnough`. Home Assistant's presence simulator uses
+this same PLC-controlled darkness condition as the outdoor lighting.
+
 Version 1.0.21 targets PLC v0.36.2 and:
 
 - removes the retired floor-heating supply/return temperature and offset reads,

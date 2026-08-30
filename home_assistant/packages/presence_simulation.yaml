@@ -1,0 +1,312 @@
+# Lintumetsäntie – uskottava poissaolosimulaatio
+#
+# Käynnistyy vain AWAY LONG -tilassa PLC:n pimeysehdon ollessa aktiivinen.
+# HOME/AWAY, valoisa, palo- tai murtohälytys pysäyttää simulaation heti.
+# Kaikki simulaation käyttämät valot sammutetaan viimeistään klo 23.30.
+
+input_boolean:
+  poissaolosimulaatio_kaynnissa:
+    name: Poissaolosimulaatio käynnissä
+    icon: mdi:home-clock
+
+template:
+  - switch:
+      - name: Poissaolosimulaatio
+        unique_id: poissaolosimulaatio
+        icon: mdi:home-clock
+        state: >-
+          {{ is_state('input_boolean.poissaolosimulaatio_kaynnissa', 'on') }}
+        turn_on:
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.palohalytys
+            state: "off"
+          - condition: state
+            entity_id: binary_sensor.murtohalytys
+            state: "off"
+          - condition: time
+            after: "14:00:00"
+            before: "22:45:00"
+          - action: script.turn_on
+            target:
+              entity_id: script.poissaolosimulaatio_uskottava
+        turn_off:
+          - action: script.turn_off
+            target:
+              entity_id: script.poissaolosimulaatio_uskottava
+          - action: script.poissaolosimulaatio_sammuta_valot
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.poissaolosimulaatio_kaynnissa
+
+script:
+  poissaolosimulaatio_sammuta_valot:
+    alias: Poissaolosimulaatio - sammuta simulaatiovalot
+    mode: restart
+    sequence:
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.khh_ikkuna_valot
+            - light.eteinen_valot
+            - light.tyohuone_valo
+            - light.allun_kattovalo
+            - light.oh_kulku_spotit
+            - light.tekninentila_beckhoff_cx5000_oh_keskivalo
+            - light.keittio_valo
+            - light.lt_spotit
+
+  poissaolosimulaatio_uskottava:
+    alias: Poissaolosimulaatio - uskottava ilta
+    mode: restart
+    sequence:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.poissaolosimulaatio_kaynnissa
+
+      - action: script.poissaolosimulaatio_sammuta_valot
+
+      - delay:
+          minutes: "{{ range(2, 16) | random }}"
+
+      # 1. Keittiö ja KHH: alkuillan ruoanlaitto.
+      - if:
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.palohalytys
+            state: "off"
+          - condition: state
+            entity_id: binary_sensor.murtohalytys
+            state: "off"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.keittio_valo
+          - delay:
+              minutes: "{{ range(20, 51) | random }}"
+          - action: light.turn_on
+            target:
+              entity_id: light.khh_ikkuna_valot
+          - delay:
+              minutes: "{{ range(8, 21) | random }}"
+          - action: light.turn_off
+            target:
+              entity_id:
+                - light.khh_ikkuna_valot
+                - light.keittio_valo
+
+      # 2. Olohuone: joka ilta satunnaisesti kulkuspotit tai keskivalo.
+      - if:
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: time
+            before: "22:45:00"
+        then:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ (range(0, 2) | random) == 0 }}"
+                sequence:
+                  - action: light.turn_on
+                    target:
+                      entity_id: light.oh_kulku_spotit
+                  - delay:
+                      minutes: "{{ range(35, 91) | random }}"
+                  - action: light.turn_off
+                    target:
+                      entity_id: light.oh_kulku_spotit
+            default:
+              - action: light.turn_on
+                target:
+                  entity_id: light.tekninentila_beckhoff_cx5000_oh_keskivalo
+              - delay:
+                  minutes: "{{ range(30, 76) | random }}"
+              - action: light.turn_off
+                target:
+                  entity_id: light.tekninentila_beckhoff_cx5000_oh_keskivalo
+
+      # 3. Työhuone: käytössä noin 60 prosenttina illoista.
+      - if:
+          - condition: template
+            value_template: "{{ (range(0, 10) | random) < 6 }}"
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: time
+            before: "22:30:00"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.tyohuone_valo
+          - delay:
+              minutes: "{{ range(18, 56) | random }}"
+          - action: light.turn_off
+            target:
+              entity_id: light.tyohuone_valo
+
+      # 4. Lyhyt kulku eteisessä.
+      - if:
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: time
+            before: "23:00:00"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.eteinen_valot
+          - delay:
+              minutes: "{{ range(4, 13) | random }}"
+          - action: light.turn_off
+            target:
+              entity_id: light.eteinen_valot
+
+      # 5. Nukkumaanmeno: Allun tai L&T:n huone, joskus ei kumpaakaan.
+      - if:
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: time
+            before: "23:15:00"
+        then:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: "{{ (range(0, 10) | random) < 4 }}"
+                sequence:
+                  - action: light.turn_on
+                    target:
+                      entity_id: light.allun_kattovalo
+                  - delay:
+                      minutes: "{{ range(15, 41) | random }}"
+                  - action: light.turn_off
+                    target:
+                      entity_id: light.allun_kattovalo
+              - conditions:
+                  - condition: template
+                    value_template: "{{ (range(0, 10) | random) < 7 }}"
+                sequence:
+                  - action: light.turn_on
+                    target:
+                      entity_id: light.lt_spotit
+                  - delay:
+                      minutes: "{{ range(15, 46) | random }}"
+                  - action: light.turn_off
+                    target:
+                      entity_id: light.lt_spotit
+
+      # 6. Viimeinen lyhyt käynti KHH:ssa noin puolena illoista.
+      - if:
+          - condition: template
+            value_template: "{{ (range(0, 10) | random) < 5 }}"
+          - condition: state
+            entity_id: switch.talon_tila_poissa_pitkaan
+            state: "on"
+          - condition: state
+            entity_id: binary_sensor.pimeaa_riittavasti
+            state: "on"
+          - condition: time
+            before: "23:25:00"
+        then:
+          - action: light.turn_on
+            target:
+              entity_id: light.khh_ikkuna_valot
+          - delay:
+              minutes: "{{ range(5, 13) | random }}"
+          - action: light.turn_off
+            target:
+              entity_id: light.khh_ikkuna_valot
+
+      - action: script.poissaolosimulaatio_sammuta_valot
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.poissaolosimulaatio_kaynnissa
+
+automation:
+  - id: lintumetsantie_poissaolosimulaatio_start
+    alias: Poissaolosimulaatio - käynnistä pimeällä AWAY LONG
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: switch.talon_tila_poissa_pitkaan
+        to: "on"
+        id: away_long
+      - trigger: state
+        entity_id: binary_sensor.pimeaa_riittavasti
+        to: "on"
+        id: dark
+      - trigger: homeassistant
+        event: start
+        id: startup
+    actions:
+      - if:
+          - condition: trigger
+            id: startup
+        then:
+          - delay: "00:00:30"
+      - condition: state
+        entity_id: switch.talon_tila_poissa_pitkaan
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.pimeaa_riittavasti
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.palohalytys
+        state: "off"
+      - condition: state
+        entity_id: binary_sensor.murtohalytys
+        state: "off"
+      - condition: time
+        after: "14:00:00"
+        before: "22:45:00"
+      - action: switch.turn_on
+        target:
+          entity_id: switch.poissaolosimulaatio
+
+  - id: lintumetsantie_poissaolosimulaatio_stop
+    alias: Poissaolosimulaatio - pysäytä turvallisesti
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: switch.talon_tila_poissa_pitkaan
+        from: "on"
+      - trigger: state
+        entity_id: binary_sensor.palohalytys
+        to: "on"
+      - trigger: state
+        entity_id: binary_sensor.murtohalytys
+        to: "on"
+      - trigger: state
+        entity_id: binary_sensor.pimeaa_riittavasti
+        to: "off"
+      - trigger: time
+        at: "23:30:00"
+      - trigger: homeassistant
+        event: shutdown
+    actions:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.poissaolosimulaatio
