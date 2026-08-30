@@ -78,6 +78,10 @@ RUN python3 /tmp/patch_v120.py && rm /tmp/patch_v120.py
 COPY patch_v121.py /tmp/patch_v121.py
 RUN python3 /tmp/patch_v121.py && rm /tmp/patch_v121.py
 
+# v1.0.22 publishes the PLC darkness condition used by presence simulation.
+COPY patch_v122.py /tmp/patch_v122.py
+RUN python3 /tmp/patch_v122.py && rm /tmp/patch_v122.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
