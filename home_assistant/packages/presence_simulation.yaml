@@ -1,13 +1,18 @@
 # Lintumetsäntie – uskottava poissaolosimulaatio
 #
-# Käynnistyy vain AWAY LONG -tilassa PLC:n pimeysehdon ollessa aktiivinen.
-# HOME/AWAY, valoisa, palo- tai murtohälytys pysäyttää simulaation heti.
-# Kaikki simulaation käyttämät valot sammutetaan viimeistään klo 23.30.
+# Valmiustila kytkeytyy AWAY LONG -tilassa ja pysyy päällä koko poissaolon ajan.
+# Iltajakso käynnistyy joka päivä PLC:n pimeysehdosta. Valoisa, palo- tai
+# murtohälytys pysäyttää vain käynnissä olevan iltajakson. HOME/AWAY poistaa
+# valmiustilan. Kaikki simulaatiovalot sammuvat viimeistään klo 23.30.
 
 input_boolean:
+  poissaolosimulaatio_kaytossa:
+    name: Poissaolosimulaatio käytössä
+    icon: mdi:home-clock
+
   poissaolosimulaatio_kaynnissa:
     name: Poissaolosimulaatio käynnissä
-    icon: mdi:home-clock
+    icon: mdi:lightbulb-on
 
 template:
   - switch:
@@ -15,27 +20,35 @@ template:
         unique_id: poissaolosimulaatio
         icon: mdi:home-clock
         state: >-
-          {{ is_state('input_boolean.poissaolosimulaatio_kaynnissa', 'on') }}
+          {{ is_state('input_boolean.poissaolosimulaatio_kaytossa', 'on') }}
         turn_on:
           - condition: state
             entity_id: switch.talon_tila_poissa_pitkaan
             state: "on"
-          - condition: state
-            entity_id: binary_sensor.pimeaa_riittavasti
-            state: "on"
-          - condition: state
-            entity_id: binary_sensor.palohalytys
-            state: "off"
-          - condition: state
-            entity_id: binary_sensor.murtohalytys
-            state: "off"
-          - condition: time
-            after: "14:00:00"
-            before: "22:45:00"
-          - action: script.turn_on
+          - action: input_boolean.turn_on
             target:
-              entity_id: script.poissaolosimulaatio_uskottava
+              entity_id: input_boolean.poissaolosimulaatio_kaytossa
+          - if:
+              - condition: state
+                entity_id: binary_sensor.pimeaa_riittavasti
+                state: "on"
+              - condition: state
+                entity_id: binary_sensor.palohalytys
+                state: "off"
+              - condition: state
+                entity_id: binary_sensor.murtohalytys
+                state: "off"
+              - condition: time
+                after: "14:00:00"
+                before: "22:45:00"
+            then:
+              - action: script.turn_on
+                target:
+                  entity_id: script.poissaolosimulaatio_uskottava
         turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.poissaolosimulaatio_kaytossa
           - action: script.turn_off
             target:
               entity_id: script.poissaolosimulaatio_uskottava
@@ -246,18 +259,14 @@ script:
           entity_id: input_boolean.poissaolosimulaatio_kaynnissa
 
 automation:
-  - id: lintumetsantie_poissaolosimulaatio_start
-    alias: Poissaolosimulaatio - käynnistä pimeällä AWAY LONG
+  - id: lintumetsantie_poissaolosimulaatio_arm
+    alias: Poissaolosimulaatio - valmiustila AWAY LONG
     mode: restart
     triggers:
       - trigger: state
         entity_id: switch.talon_tila_poissa_pitkaan
         to: "on"
         id: away_long
-      - trigger: state
-        entity_id: binary_sensor.pimeaa_riittavasti
-        to: "on"
-        id: dark
       - trigger: homeassistant
         event: start
         id: startup
@@ -270,6 +279,34 @@ automation:
       - condition: state
         entity_id: switch.talon_tila_poissa_pitkaan
         state: "on"
+      - action: switch.turn_on
+        target:
+          entity_id: switch.poissaolosimulaatio
+
+  - id: lintumetsantie_poissaolosimulaatio_start_evening
+    alias: Poissaolosimulaatio - käynnistä iltajakso
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.pimeaa_riittavasti
+        to: "on"
+      - trigger: state
+        entity_id: binary_sensor.palohalytys
+        from: "on"
+        to: "off"
+      - trigger: state
+        entity_id: binary_sensor.murtohalytys
+        from: "on"
+        to: "off"
+      - trigger: time
+        at: "14:00:01"
+    conditions:
+      - condition: state
+        entity_id: switch.poissaolosimulaatio
+        state: "on"
+      - condition: state
+        entity_id: switch.talon_tila_poissa_pitkaan
+        state: "on"
       - condition: state
         entity_id: binary_sensor.pimeaa_riittavasti
         state: "on"
@@ -279,20 +316,21 @@ automation:
       - condition: state
         entity_id: binary_sensor.murtohalytys
         state: "off"
+      - condition: state
+        entity_id: script.poissaolosimulaatio_uskottava
+        state: "off"
       - condition: time
         after: "14:00:00"
         before: "22:45:00"
-      - action: switch.turn_on
+    actions:
+      - action: script.turn_on
         target:
-          entity_id: switch.poissaolosimulaatio
+          entity_id: script.poissaolosimulaatio_uskottava
 
-  - id: lintumetsantie_poissaolosimulaatio_stop
-    alias: Poissaolosimulaatio - pysäytä turvallisesti
+  - id: lintumetsantie_poissaolosimulaatio_stop_evening
+    alias: Poissaolosimulaatio - pysäytä iltajakso turvallisesti
     mode: restart
     triggers:
-      - trigger: state
-        entity_id: switch.talon_tila_poissa_pitkaan
-        from: "on"
       - trigger: state
         entity_id: binary_sensor.palohalytys
         to: "on"
@@ -306,6 +344,22 @@ automation:
         at: "23:30:00"
       - trigger: homeassistant
         event: shutdown
+    actions:
+      - action: script.turn_off
+        target:
+          entity_id: script.poissaolosimulaatio_uskottava
+      - action: script.poissaolosimulaatio_sammuta_valot
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.poissaolosimulaatio_kaynnissa
+
+  - id: lintumetsantie_poissaolosimulaatio_disarm
+    alias: Poissaolosimulaatio - poista valmiustila HOME tai AWAY
+    mode: restart
+    triggers:
+      - trigger: state
+        entity_id: switch.talon_tila_poissa_pitkaan
+        from: "on"
     actions:
       - action: switch.turn_off
         target:
