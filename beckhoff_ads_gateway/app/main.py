@@ -4,7 +4,7 @@ from typing import Any
 import paho.mqtt.client as mqtt
 import pyads
 
-VERSION = "1.8.0"
+VERSION = "1.9.0"
 PLC_IP = os.environ["PLC_IP"]
 PLC_AMS_NET_ID = os.environ["PLC_AMS_NET_ID"]
 LOCAL_AMS_NET_ID = os.environ["LOCAL_AMS_NET_ID"]
@@ -19,6 +19,7 @@ SENSORS_JSON = os.environ["SENSORS_JSON"]
 LIGHTS_JSON = os.environ.get("LIGHTS_JSON", "[]")
 BINARY_SENSORS_JSON = os.environ.get("BINARY_SENSORS_JSON", "[]")
 TIMED_OUTPUTS_JSON = os.environ.get("TIMED_OUTPUTS_JSON", "[]")
+SEASON_COMMANDS_JSON = os.environ.get("SEASON_COMMANDS_JSON", "[]")
 ROOMS_JSON = os.environ.get("ROOMS_JSON", "[]")
 SCAN_HVAC_STATES = os.environ.get("SCAN_HVAC_STATES", "false").lower() == "true"
 SCAN_START_INDEX = int(os.environ.get("SCAN_START_INDEX", "0"))
@@ -47,6 +48,7 @@ SENSORS = load_array(SENSORS_JSON, "sensors_json")
 LIGHTS = load_array(LIGHTS_JSON, "lights_json")
 BINARY_SENSORS = load_array(BINARY_SENSORS_JSON, "binary_sensors_json")
 TIMED_OUTPUTS = load_array(TIMED_OUTPUTS_JSON, "timed_outputs_json")
+SEASON_COMMANDS = load_array(SEASON_COMMANDS_JSON, "season_commands_json")
 ROOMS = load_array(ROOMS_JSON, "rooms_json")
 if not SENSORS:
     raise RuntimeError("sensors_json must not be empty")
@@ -76,12 +78,18 @@ for timed_output in TIMED_OUTPUTS:
     if int(timed_output.get("duration_s", 0)) <= 0:
         raise RuntimeError(f"Timed output duration_s must be > 0: {timed_output}")
 
+for season_command in SEASON_COMMANDS:
+    for key in ("id", "name", "command_symbol", "state_symbol"):
+        if not season_command.get(key):
+            raise RuntimeError(f"Season command missing required field {key}: {season_command}")
+
 LIGHT_BY_ID = {light["id"]: light for light in LIGHTS}
 for label, items in (
     ("sensor", SENSORS),
     ("light", LIGHTS),
     ("binary sensor", BINARY_SENSORS),
     ("timed output", TIMED_OUTPUTS),
+    ("season command", SEASON_COMMANDS),
     ("room", ROOMS),
 ):
     ids = [item["id"] for item in items]
@@ -99,6 +107,7 @@ for room in ROOMS:
 
 command_queue = queue.Queue()
 timed_command_queue = queue.Queue()
+season_command_queue = queue.Queue()
 TIMED_STATE_FILE = "/data/timed_outputs_state.json"
 stop_requested = False
 mqtt_connected = threading.Event()
@@ -170,6 +179,15 @@ def timed_output_topics(timed_output):
         f"beckhoff_ads/timed/{tid}/availability",
     )
 
+def season_command_topics(season_command):
+    sid = season_command["id"]
+    return (
+        f"homeassistant/button/beckhoff_ads/{sid}/config",
+        f"beckhoff_ads/season/{sid}/press",
+        f"beckhoff_ads/season/{sid}/availability",
+    )
+
+
 def room_topics(room):
     rid = room["id"]
     return (
@@ -190,7 +208,12 @@ def on_connect(client, userdata, flags, reason_code, properties=None):
         client.subscribe(light_topics(light)[2], qos=1)
     for timed_output in TIMED_OUTPUTS:
         client.subscribe(timed_output_topics(timed_output)[2], qos=1)
-    LOGGER.info("MQTT subscribed to %d light and %d timed-output command topics", len(LIGHTS), len(TIMED_OUTPUTS))
+    for season_command in SEASON_COMMANDS:
+        client.subscribe(season_command_topics(season_command)[1], qos=1)
+    LOGGER.info(
+        "MQTT subscribed to %d light, %d timed-output and %d HVAC season command topics",
+        len(LIGHTS), len(TIMED_OUTPUTS), len(SEASON_COMMANDS)
+    )
 
 
 def on_disconnect(client, userdata, disconnect_flags, reason_code, properties=None):
@@ -216,6 +239,11 @@ def on_message(client, userdata, msg):
                 LOGGER.info("MQTT timed-output command queued: %s -> %s", timed_output["id"], payload)
             else:
                 LOGGER.warning("Ignoring invalid timed-output command for %s: %r", timed_output["id"], payload)
+            return
+    for season_command in SEASON_COMMANDS:
+        if msg.topic == season_command_topics(season_command)[1]:
+            season_command_queue.put(season_command)
+            LOGGER.info("MQTT HVAC season command queued: %s", season_command["id"])
             return
 
 
@@ -354,6 +382,26 @@ def publish_timed_output_discovery(c, timed_output):
     c.publish(avail_topic, "online", qos=1, retain=True).wait_for_publish(timeout=5)
     LOGGER.info("MQTT Timed Output Discovery published: %s", timed_output["id"])
 
+def publish_season_command_discovery(c, season_command):
+    discovery_topic, command_topic, avail_topic = season_command_topics(season_command)
+    payload = {
+        "name": season_command["name"],
+        "unique_id": f"beckhoff_ads_season_{season_command['id']}",
+        "default_entity_id": f"button.{season_command['id']}",
+        "command_topic": command_topic,
+        "payload_press": "PRESS",
+        "availability_topic": avail_topic,
+        "payload_available": "online",
+        "payload_not_available": "offline",
+        "icon": season_command.get("icon", "mdi:home-thermometer"),
+        "device": device_block(),
+        "origin": origin_block(),
+    }
+    c.publish(discovery_topic, json.dumps(payload), qos=1, retain=True).wait_for_publish(timeout=5)
+    c.publish(avail_topic, "online", qos=1, retain=True).wait_for_publish(timeout=5)
+    LOGGER.info("MQTT HVAC season button Discovery published: %s", season_command["id"])
+
+
 def publish_room_discovery(c, room):
     discovery_topic, state_topic, attr_topic, avail_topic = room_topics(room)
     total = len(room["lights"])
@@ -413,6 +461,42 @@ def pulse_light_command(plc, light, command):
     plc.write_by_name(symbol, False, pyads.PLCTYPE_BOOL)
     readback_low = bool(plc.read_by_name(symbol, pyads.PLCTYPE_BOOL))
     LOGGER.info("TcBA light pulse completed: %s -> %s (%d ms), cleared_readback=%s", light["id"], command, pulse_ms, readback_low)
+
+
+def pulse_season_command(plc, season_command):
+    symbol = season_command["command_symbol"]
+    pulse_ms = max(50, int(season_command.get("pulse_ms", 200)))
+    asserted = False
+    try:
+        plc.write_by_name(symbol, False, pyads.PLCTYPE_BOOL)
+        time.sleep(0.05)
+        plc.write_by_name(symbol, True, pyads.PLCTYPE_BOOL)
+        asserted = True
+        readback_high = bool(plc.read_by_name(symbol, pyads.PLCTYPE_BOOL))
+        LOGGER.info(
+            "HVAC season command asserted: %s symbol=%s readback=%s",
+            season_command["id"], symbol, readback_high
+        )
+        time.sleep(pulse_ms / 1000.0)
+    finally:
+        if asserted:
+            plc.write_by_name(symbol, False, pyads.PLCTYPE_BOOL)
+            readback_low = bool(plc.read_by_name(symbol, pyads.PLCTYPE_BOOL))
+            LOGGER.info(
+                "HVAC season pulse completed: %s (%d ms), cleared_readback=%s",
+                season_command["id"], pulse_ms, readback_low
+            )
+
+
+def process_season_commands(plc):
+    processed = 0
+    while processed < 10:
+        try:
+            season_command = season_command_queue.get_nowait()
+        except queue.Empty:
+            break
+        pulse_season_command(plc, season_command)
+        processed += 1
 
 
 def process_light_commands(plc):
@@ -619,8 +703,8 @@ def scan_hvac(plc):
 
 def main():
     LOGGER.info(
-        "Configured %d sensors, %d lights, %d binary sensors, %d timed outputs and %d rooms",
-        len(SENSORS), len(LIGHTS), len(BINARY_SENSORS), len(TIMED_OUTPUTS), len(ROOMS)
+        "Configured %d sensors, %d lights, %d binary sensors, %d timed outputs, %d HVAC season commands and %d rooms",
+        len(SENSORS), len(LIGHTS), len(BINARY_SENSORS), len(TIMED_OUTPUTS), len(SEASON_COMMANDS), len(ROOMS)
     )
     c = mqtt_client()
     remove_deprecated_light_discovery(c)
@@ -633,6 +717,8 @@ def main():
         publish_binary_sensor_discovery(c, binary_sensor)
     for timed_output in TIMED_OUTPUTS:
         publish_timed_output_discovery(c, timed_output)
+    for season_command in SEASON_COMMANDS:
+        publish_season_command_discovery(c, season_command)
     for room in ROOMS:
         publish_room_discovery(c, room)
 
@@ -672,6 +758,7 @@ def main():
 
                 process_light_commands(plc)
                 process_timed_output_commands(plc, timed_expiries)
+                process_season_commands(plc)
                 expire_timed_outputs(plc, timed_expiries)
                 now = time.monotonic()
 
@@ -790,6 +877,9 @@ def main():
                 for timed_output in TIMED_OUTPUTS:
                     try: c.publish(timed_output_topics(timed_output)[3], "offline", qos=1, retain=True)
                     except Exception: pass
+                for season_command in SEASON_COMMANDS:
+                    try: c.publish(season_command_topics(season_command)[2], "offline", qos=1, retain=True)
+                    except Exception: pass
                 for _ in range(RECONNECT_DELAY * 5):
                     if stop_requested: break
                     time.sleep(0.2)
@@ -809,6 +899,9 @@ def main():
             except Exception: pass
         for timed_output in TIMED_OUTPUTS:
             try: c.publish(timed_output_topics(timed_output)[3], "offline", qos=1, retain=True)
+            except Exception: pass
+        for season_command in SEASON_COMMANDS:
+            try: c.publish(season_command_topics(season_command)[2], "offline", qos=1, retain=True)
             except Exception: pass
         for room in ROOMS:
             try: c.publish(room_topics(room)[3], "offline", qos=1, retain=True)
