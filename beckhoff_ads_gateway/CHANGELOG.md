@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.9.0
+- Added Home Assistant HVAC season buttons: `button.hvac_kesakausi` and `button.hvac_talvikausi`.
+- Season button presses pulse PLC BOOL commands `GVL_HA.xCmdHvacSeasonSummer` / `GVL_HA.xCmdHvacSeasonWinter` for 200 ms and always clear them back to FALSE.
+- Added PLC-confirmed season status entities `binary_sensor.hvac_kesakausi` and `binary_sensor.hvac_talvikausi` from `GVL_HA.xHvacSeasonSummer` / `GVL_HA.xHvacSeasonWinter`.
+- Intended for PLC v0.36.7 and the Service dashboard's separately confirmed summer/winter changeover controls.
+
+
 ## 1.8.0
 - Added four downstairs temperatures: workroom, sauna, cold cellar and cellar.
 - Added 14 verified downstairs TcBA lighting groups and room-level light counters.
