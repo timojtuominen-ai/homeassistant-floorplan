@@ -82,6 +82,10 @@ RUN python3 /tmp/patch_v121.py && rm /tmp/patch_v121.py
 COPY patch_v122.py /tmp/patch_v122.py
 RUN python3 /tmp/patch_v122.py && rm /tmp/patch_v122.py
 
+# v1.0.23 adds manual HVAC summer/winter season buttons and PLC-confirmed states.
+COPY patch_v123.py /tmp/patch_v123.py
+RUN python3 /tmp/patch_v123.py && rm /tmp/patch_v123.py
+
 COPY run.sh /run.sh
 RUN chmod a+x /run.sh
 CMD ["/run.sh"]
